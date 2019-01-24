@@ -8,6 +8,8 @@ This is a simple app for combining two or more presence sensors, and using the r
 
 I can verify that presence from the Alexa app satisfies this.  I can also verify that my iPhone WiFi Presence Sensor (https://github.com/joelwetzel/Hubitat-iPhone-Presence-Sensor) satisfies this.
 
+However, if your input sensors ever give false positives, then I do not recommend this app.
+
 ## Use Case 2
 If you have presence sensors for two people, you can use this to set a third Virtual Presence sensor for "Somebody is home", then use the departed event from it in Rule Machine to trigger events for when the last person has left the house.
 
