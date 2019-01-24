@@ -2,7 +2,7 @@
 An app for Habitat to combine two or more presence sensors to control an output Virtual Presence Sensor.  It uses a boolean-OR to combine them.
 
 ## Use Case 1
-This is a simple app for combining two or more presence sensors, and using the result to set an output Virtual Presence sensor.  The idea is to have the output sensor be more reliable than either of the input sensors alone.  It uses a boolean-OR to combine them.  This means it will work great if:
+I want to make an output sensor that will be more reliable than either of the input sensors alone.  It uses a boolean-OR to combine them.  This means it will work great if:
 
 - Your input sensors only give false negatives, but do not give false positives.
 
