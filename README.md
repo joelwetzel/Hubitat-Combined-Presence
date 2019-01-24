@@ -14,7 +14,7 @@ However, if your input sensors ever give false positives, then I do not recommen
 If you have presence sensors for two people, you can use this to set a third Virtual Presence sensor for "Somebody is home", then use the departed event from it in Rule Machine to trigger events for when the last person has left the house.
 
 ## Daisychaining
-This app is entirely virtual and on the Hubitat hub, so it runs very very fast.  This means you can daisychain multiple combinations.
+This app is entirely virtual and on the Hubitat hub, so it runs very fast.  This means you can daisychain multiple combinations.
 
 An example with 3 combiners:
 - "My iPhone Alexa" + "My iPhone WiFi" --> "My combined, reliable presence"
