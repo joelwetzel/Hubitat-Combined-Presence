@@ -46,49 +46,90 @@ def outputSensor = [
 		required:			true
 	]
 
+def thresholdInput = [
+		name:				"threshold",
+		type:				"int",
+		title:				"Threshold",
+		//description:		"",
+		multiple:			false,
+		required:			true
+	]
+
 
 preferences {
 	page(name: "mainPage", title: "<b>Presence Sensors:</b>", install: true, uninstall: true) {
 		section("") {
 			input inputSensors
 			input outputSensor
+			input thresholdInput
 		}
+		
+		
+		section("") {
+            input "isDebug", "bool", title: "Enable Debug Logging", required: false, multiple: false, defaultValue: false, submitOnChange: true
+        }
 	}
 }
 
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"
+	log.info "Installed with settings: ${settings}"
 
 	initialize()
 }
 
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
+	log.info "Updated with settings: ${settings}"
 
 	unsubscribe()
 	initialize()
 }
 
 
+
 def initialize() {
-	subscribe(inputSensors, "presence", presenceChangedHandler)
-	
+	subscribe(inputSensors, "presence.present", presenceChangedHandler)
+	subscribe(inputSensors, "presence.not present", presenceChangedHandler)
 	app.updateLabel("Combined Presence for ${outputSensor.displayName}")
 }
 
 
 def presenceChangedHandler(evt) {
-	//log.debug "PRESENCE CHANGED for one input sensor."	
-	
+	ifDebug("$evt.value")
+	sendEvent(name:"Presence Changed", value: " $evt.value", displayed:false, isStateChange: false)
 	def present = false
-	
-	inputSensors.each { inputSensor ->
-		if (inputSensor.currentValue("presence") == "present") {
-			present = true	
-		}
+	switch(evt.value){
+		case "not present":
+			int count = 0
+			inputSensors.each { inputSensor ->
+				if (inputSensor.currentValue("presence") == "not present") {
+					ifDebug("${inputSensor.label} not present")
+					count++
+				}
+			}
+			ifDebug("$count sensors not present")
+			if (count >= Integer.parseInt(threshold)){
+				ifDebug("Threshold met setting not present")
+				present = false
+			}	
+				break
+		case "present":
+			int count = 0
+			inputSensors.each { inputSensor ->
+				if (inputSensor.currentValue("presence") == "present") {
+					ifDebug("${inputSensor.label} present")
+					count++
+				}
+			}
+			ifDebug("$count sensors present")
+			if (count >= Integer.parseInt(threshold)){
+				ifDebug("Threshold met setting present")
+				present = true	
+			}	
+				break
 	}
+
 	
 	if (present) {
 		outputSensor.arrived()	
@@ -98,14 +139,7 @@ def presenceChangedHandler(evt) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
+private ifDebug(msg)     
+{  
+    if (msg && isDebug)  log.debug "Combined Presence for $outputSensor.displayName: " + msg  
+}
