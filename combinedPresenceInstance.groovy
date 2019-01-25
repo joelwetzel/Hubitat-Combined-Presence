@@ -96,9 +96,8 @@ def initialize() {
 
 
 def presenceChangedHandler(evt) {
-	ifDebug("$evt.value")
-	sendEvent(name:"Presence Changed", value: " $evt.value", displayed:false, isStateChange: false)
-	def present = false
+	ifDebug("$evt.component - $evt.value")
+	sendEvent(name:"Presence Changed", value: "$evt.component - $evt.value", displayed:false, isStateChange: false)
 	switch(evt.value){
 		case "not present":
 			int count = 0
@@ -111,13 +110,16 @@ def presenceChangedHandler(evt) {
 			ifDebug("$count sensors not present")
 			if (count >= Integer.parseInt(threshold)){
 				ifDebug("Threshold met setting not present")
-				present = false
+				sendEvent(name:"Threshold", value: "$threshold met", displayed:false, isStateChange: false)
+				outputSensor.departed()
+				sendEvent(name:"Combined Presence", value: "departed", displayed:false, isStateChange: false)
 			}	
 				break
 		case "present":
 			int count = 0
 			inputSensors.each { inputSensor ->
 				if (inputSensor.currentValue("presence") == "present") {
+					sendEvent(name:"Threshold", value: "$threshold met", displayed:false, isStateChange: false)
 					ifDebug("${inputSensor.label} present")
 					count++
 				}
@@ -125,17 +127,11 @@ def presenceChangedHandler(evt) {
 			ifDebug("$count sensors present")
 			if (count >= Integer.parseInt(threshold)){
 				ifDebug("Threshold met setting present")
-				present = true	
+				outputSensor.arrived()	
+				sendEvent(name:"Combined Presence", value: "arrived", displayed:false, isStateChange: false)
+
 			}	
 				break
-	}
-
-	
-	if (present) {
-		outputSensor.arrived()	
-	}
-	else {
-		outputSensor.departed()
 	}
 }
 
