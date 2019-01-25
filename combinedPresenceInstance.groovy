@@ -96,8 +96,8 @@ def initialize() {
 
 
 def presenceChangedHandler(evt) {
-	ifDebug("$evt.component - $evt.value")
-	sendEvent(name:"Presence Changed", value: "$evt.component - $evt.value", displayed:false, isStateChange: false)
+	ifDebug("$evt.device - $evt.value")
+	sendEvent(name:"Presence Changed", value: "$evt.device - $evt.value", displayed:false, isStateChange: false)
 	switch(evt.value){
 		case "not present":
 			int count = 0
