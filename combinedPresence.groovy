@@ -19,7 +19,7 @@ definition(
     name: "Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
-    description: "An app for Habitat to combine the values of presence sensors.",
+    description: "An app for Hubitat to combine the values of presence sensors.",
     category: "Convenience",
 	iconUrl: "",
     iconX2Url: "",
@@ -32,20 +32,20 @@ preferences {
 
 
 def installed() {
-    log.debug "Installed with settings: ${settings}"
+    log.info "Installed with settings: ${settings}"
     initialize()
 }
 
 
 def updated() {
-    log.debug "Updated with settings: ${settings}"
+    log.info "Updated with settings: ${settings}"
     unsubscribe()
     initialize()
 }
 
 
 def initialize() {
-    log.info "There are ${childApps.size()} child apps"
+    log.info "There are ${childApps.size()} child apps installed."
     childApps.each { child ->
     	log.info "Child app: ${child.label}"
     }
@@ -61,12 +61,6 @@ def installCheck() {
   	else {
     	log.info "Parent Installed OK"
   	}
-}
-
-
-def getImage(type) {
-    def loc = "<img src=https://raw.githubusercontent.com/bptworld/Hubitat/master/resources/images/"
-    if(type == "Blank") return "${loc}blank.png height=35 width=5}>"
 }
 
 
