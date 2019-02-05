@@ -20,18 +20,18 @@ definition(
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
-    description: "This will set a virtual presence sensor to the logical-OR of all the input sensors",
+    description: "This will set a virtual presence sensor to the logical-OR of all the input sensors.  It is the child app of Combined Presence.",
     category: "Safety & Security",
-	iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
-    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
-    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
+	iconUrl: "",
+    iconX2Url: "",
+    iconX3Url: "")
 
 
 def inputSensors = [
 		name:				"inputSensors",
 		type:				"capability.presenceSensor",
 		title:				"Input Sensors",
-		//description:		"",
+		description:		"The sensors that will be combined.",
 		multiple:			true,
 		required:			true
 	]
@@ -41,7 +41,7 @@ def outputSensor = [
 		name:				"outputSensor",
 		type:				"capability.presenceSensor",
 		title:				"Output Sensor",
-		//description:		"",
+		description:		"The result of the combination.",
 		multiple:			false,
 		required:			true
 	]
@@ -58,14 +58,14 @@ preferences {
 
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"
+	log.info "Installed with settings: ${settings}"
 
 	initialize()
 }
 
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
+	log.info "Updated with settings: ${settings}"
 
 	unsubscribe()
 	initialize()
