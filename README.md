@@ -6,7 +6,7 @@ I want to make an output sensor that will be more reliable than either of the in
 
 - Your input sensors only give false negatives, but do not give false positives.
 
-I can verify that presence from the Alexa app satisfies this.  I can also verify that my iPhone WiFi Presence Sensor (https://github.com/joelwetzel/Hubitat-iPhone-Presence-Sensor) satisfies this.
+I can verify that presence from the Alexa app or from HomeKit satisfies this.  I can also verify that my iPhone WiFi Presence Sensor (https://github.com/joelwetzel/Hubitat-iPhone-Presence-Sensor) satisfies this.
 
 However, if your input sensors ever give false positives, then I do not recommend this app.
 
