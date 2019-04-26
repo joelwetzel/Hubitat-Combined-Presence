@@ -46,12 +46,21 @@ def outputSensor = [
 		required:			true
 	]
 
+def notificationNumber = [
+		name:				"notificationNumber",
+		type:				"string",
+		title:				"SMS Phone Number",
+		description:		"Phone number for notifications.  Must be in the form (for US) +1xxxyyyzzzz.",
+		required:			false
+	]
+
 
 preferences {
 	page(name: "mainPage", title: "<b>Presence Sensors:</b>", install: true, uninstall: true) {
 		section("") {
 			input inputSensors
 			input outputSensor
+			input notificationNumber
 		}
 	}
 }
@@ -90,11 +99,29 @@ def presenceChangedHandler(evt) {
 		}
 	}
 	
+	def oldPresent = outputSensor.currentValue("presence")
+	
 	if (present) {
-		outputSensor.arrived()	
+		outputSensor.arrived()
+		
+		if (oldPresent != "present") {
+			//log.debug "ARRIVED"	
+			
+			if (notificationNumber && notificationNumber.size() > 0) {
+				sendSms(notificationNumber, "Arrived: ${outputSensor.displayName}")
+			}
+		}
 	}
 	else {
 		outputSensor.departed()
+
+		if (oldPresent == "present") {
+			//log.debug "DEPARTED"	
+			
+			if (notificationNumber && notificationNumber.size() > 0) {
+				sendSms(notificationNumber, "Departed: ${outputSensor.displayName}")
+			}
+		}
 	}
 }
 
