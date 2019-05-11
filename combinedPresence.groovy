@@ -85,14 +85,14 @@ def mainPage() {
 		
 		if (state.appInstalled == 'COMPLETE') {
 			section(getFormat("title", "${app.label}")) {
-				paragraph "Combine two or more presence sensors to control an output Virtual Presence Sensor.  It uses a boolean-OR to combine them."
+				paragraph "Combine two or more presence sensors to control an output Virtual Presence Sensor."
 			}
-  			section("<b>Bindings:</b>") {
-				app(name: "anyOpenApp", appName: "Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new combined presence</b>", multiple: true)
+  			section("<b>Standard Bindings:</b>") {
+				app(name: "anyOpenApp", appName: "Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Combined Presence Instance</b>", multiple: true)
 			}
-			section("<b>General</b>") {
-       			label title: "Enter a name for parent app (optional)", required: false
- 			}
+			section("<b>Advanced Bindings:</b>") {
+				app(name: "advancedAnyOpenApp", appName: "Advanced Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Advanced Combined Presence Instance</b>", multiple: true)
+			}
 			display()
 		}
 	}
