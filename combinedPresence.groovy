@@ -1,5 +1,5 @@
 /**
- *  Combined Presence Instance
+ *  Combined Presence
  *
  *  Copyright 2019 Joel Wetzel
  *
@@ -14,214 +14,53 @@
  *
  */
 
-import groovy.time.*
-	
+
 definition(
-    name: "Combined Presence Instance",
-	parent: "joelwetzel:Combined Presence",
+    name: "Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
-    description: "This will set a virtual presence sensor to the logical-OR of all the input sensors.  It is the child app of Combined Presence.",
-    category: "Safety & Security",
+    description: "An app for Hubitat to combine the values of presence sensors.",
+    category: "Convenience",
 	iconUrl: "",
     iconX2Url: "",
     iconX3Url: "")
 
 
-def inputSensors = [
-		name:				"inputSensors",
-		type:				"capability.presenceSensor",
-		title:				"Input Sensors",
-		description:		"The sensors that will be combined.",
-		multiple:			true,
-		required:			true
-	]
-
-
-def outputSensor = [
-		name:				"outputSensor",
-		type:				"capability.presenceSensor",
-		title:				"Output Sensor",
-		description:		"The virtual presence sensor that will be controlled by this instance.",
-		multiple:			false,
-		required:			true
-	]
-
-def notificationNumber = [
-		name:				"notificationNumber",
-		type:				"string",
-		title:				"SMS Phone Number",
-		description:		"Phone number for notifications.  Must be in the form (for US) +1xxxyyyzzzz.",
-		required:			false
-	]
-
-def notifyAboutStateChanges = [
-		name:				"notifyAboutStateChanges",
-		type:				"bool",
-		title:				"Notify about state changes to the Output sensor",
-		default:			false	
-	]
-
-def notifyAboutInconsistencies = [
-		name:				"notifyAboutInconsistencies",
-		type:				"bool",
-		title:				"Notify about inconsistent Inputs for more than 30 minutes",
-		description:		"Send notifications if input sensors have inconsistent values for an extended period.",
-		default:			false	
-	]
-
-def enableLogging = [
-		name:				"enableLogging",
-		type:				"bool",
-		title:				"Enable Debug Logging?",
-		defaultValue:		false,
-		required:			true
-	]
-
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Combined Presence Instance")) {
-		}
-		section() {
-			input inputSensors
-			input outputSensor
-		}
-		section(hideable: true, hidden: true, "Notifications") {
-			input notificationNumber
-			input notifyAboutStateChanges
-			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
-			input notifyAboutInconsistencies
-			paragraph "This will send notifications if your input sensors stay inconsistent for more than 30 minutes.  That usually means one of the sensors has stopped reporting, and should be checked."
-		}
-		section() {
-			input enableLogging
-		}
-	}
+     page name: "mainPage", title: "", install: true, uninstall: true
 }
 
 
 def installed() {
-	log.info "Installed with settings: ${settings}"
-
-	initialize()
+    log.info "Installed with settings: ${settings}"
+    initialize()
 }
 
 
 def updated() {
-	log.info "Updated with settings: ${settings}"
-
-	initialize()
+    log.info "Updated with settings: ${settings}"
+    unsubscribe()
+    initialize()
 }
 
 
 def initialize() {
-	unschedule()
-	unsubscribe()
-
-	subscribe(inputSensors, "presence", presenceChangedHandler)
-	
-	app.updateLabel("Combined Presence for ${outputSensor.displayName}")
-	
-	runEvery1Minute(checkForInconsistencies)
+    log.info "There are ${childApps.size()} child apps installed."
+    childApps.each { child ->
+    	log.info "Child app: ${child.label}"
+    }
 }
 
 
-def checkForInconsistencies() {
-	def inputsAreAllPresent = true
-	def inputsAreAllNotPresent = true
+def installCheck() {         
+	state.appInstalled = app.getInstallationState()
 	
-	inputSensors.each { inputSensor ->
-		if (inputSensor.currentValue("presence") == "present") {
-			inputsAreAllNotPresent = false	
-		}
-		
-		if (inputSensor.currentValue("presence") == "not present") {
-			inputsAreAllPresent = false	
-		}
-	}
-	
-	def inputsAreInconsistent = !(inputsAreAllPresent || inputsAreAllNotPresent)
-	
-	//log.debug "inputsAreAllPresent ${inputsAreAllPresent}"
-	//log.debug "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
-	//log.debug "inputsAreInconsistent ${inputsAreInconsistent}"
-	
-	def currentTime = new Date()
-	
-	if (inputsAreInconsistent) {
-		def lastConsistentTime = new Date()
-		if (state.lastConsistentTime) {
-			lastConsistentTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastConsistentTime)
-		}
-		
-		def lastInconsistencyWarningTime = new Date()
-		if (state.lastInconsistencyWarningTime) {
-			lastInconsistencyWarningTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastInconsistencyWarningTime)
-		}
-		
-		def timeSinceConsistency = TimeCategory.minus(currentTime, lastConsistentTime)
-		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
-		
-		if (timeSinceConsistency.minutes > 30 && timeSinceLastWarning.hours > 24) {
-			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
-			
-			log(msg)
-			if (notifyAboutInconsistencies) {
-				sendNotification(msg)
-			}
-			
-			state.lastInconsistencyWarningTime = currentTime
-		}
-	}
-	else {
-		state.lastConsistentTime = currentTime
-	}
-}
-
-
-def sendNotification(msg) {
-	if (msg && msg.size() > 0 &&
-		notificationNumber && notificationNumber.size() > 0) {
-		sendSms(notificationNumber, msg)
-	}
-}
-
-
-def presenceChangedHandler(evt) {
-	log "PRESENCE CHANGED for: ${evt.device.name}"
-	
-	def present = false
-	
-	inputSensors.each { inputSensor ->
-		if (inputSensor.currentValue("presence") == "present") {
-			present = true	
-		}
-	}
-	
-	def oldPresent = outputSensor.currentValue("presence")
-	
-	if (present) {
-		outputSensor.arrived()
-		
-		if (oldPresent != "present") {
-			log "${outputSensor.displayName}.arrived()"
-			
-			if (notifyAboutStateChanges) {
-				sendNotification("Arrived: ${outputSensor.displayName}")
-			}
-		}
-	}
-	else {
-		outputSensor.departed()
-
-		if (oldPresent == "present") {
-			log "${outputSensor.displayName}.departed()"
-			
-			if (notifyAboutStateChanges) {
-				sendNotification("Departed: ${outputSensor.displayName}")
-			}
-		}
-	}
+	if (state.appInstalled != 'COMPLETE') {
+		section{paragraph "Please hit 'Done' to install '${app.label}' parent app "}
+  	}
+  	else {
+    	log.info "Parent Installed OK"
+  	}
 }
 
 
@@ -231,20 +70,33 @@ def getFormat(type, myText=""){
 	if(type == "title") return "<h2 style='color:#1A77C9;font-weight: bold'>${myText}</h2>"
 }
 
-def log(msg) {
-	if (enableLogging) {
-		log.debug msg
-	}
+
+def display(){
+	section() {
+		paragraph getFormat("line")
+		paragraph "<div style='color:#1A77C9;text-align:center'>Combined Presence - @joelwetzel<br><a href='https://github.com/joelwetzel/' target='_blank'>Click here for more Hubitat apps/drivers on my GitHub!</a></div>"
+	}       
 }
 
 
-
-
-
-
-
-
-
+def mainPage() {
+    dynamicPage(name: "mainPage") {
+    	installCheck()
+		
+		if (state.appInstalled == 'COMPLETE') {
+			section(getFormat("title", "${app.label}")) {
+				paragraph "Combine two or more presence sensors to control an output Virtual Presence Sensor."
+			}
+  			section("<b>Standard Bindings:</b>") {
+				app(name: "anyOpenApp", appName: "Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Combined Presence Instance</b>", multiple: true)
+			}
+			section("<b>Advanced Bindings:</b>") {
+				app(name: "advancedAnyOpenApp", appName: "Advanced Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Advanced Combined Presence Instance</b>", multiple: true)
+			}
+			display()
+		}
+	}
+}
 
 
 
