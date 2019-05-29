@@ -72,10 +72,19 @@ def outputSensor = [
 		required:			true
 	]
 
+def notificationDevice = [
+		name:				"notificationDevice",
+		type:				"capability.notification",
+		title:				"Devices for Notifications",
+		description:		"Send notifications to devices.  ie. push notifications to a phone.",
+		required:			false,
+		multiple:			true
+	]
+
 def notificationNumber = [
 		name:				"notificationNumber",
 		type:				"string",
-		title:				"SMS Phone Number",
+		title:				"Phone Number for SMS Notifications",
 		description:		"Phone number for notifications.  Must be in the form (for US) +1xxxyyyzzzz.",
 		required:			false
 	]
@@ -130,6 +139,7 @@ preferences {
 			paragraph ""	
 		}
 		section(hideable: true, hidden: true, "Notifications") {
+			input notificationDevice
 			input notificationNumber
 			input notifyAboutStateChanges
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
@@ -226,9 +236,14 @@ def checkForInconsistencies() {
 
 
 def sendNotification(msg) {
-	if (msg && msg.size() > 0 &&
-		notificationNumber && notificationNumber.size() > 0) {
-		sendSms(notificationNumber, msg)
+	if (msg && msg.size() > 0) {
+		if (notificationNumber && notificationNumber.size() > 0) {
+			sendSms(notificationNumber, msg)
+		}
+		
+		if (notificationDevice) {
+			notificationDevice.deviceNotification(msg)
+		}
 	}
 }
 
