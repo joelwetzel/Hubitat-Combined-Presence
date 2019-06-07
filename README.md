@@ -1,5 +1,5 @@
 # Combined Presence app for Hubitat
-An app for Habitat to combine two or more presence sensors to control an output Virtual Presence Sensor.  The basic bindings use a boolean-OR to combine them.  The advanced bindings can do more complicated combinations.
+An app for Hubitat to combine two or more presence sensors to control an output Virtual Presence Sensor.  The basic bindings use a boolean-OR to combine them.  The advanced bindings can do more complicated combinations.
 
 ## Use Case 1
 I want to make an output sensor that will be more reliable than either of the input sensors alone.  It uses a boolean-OR to combine them.  This means it will work great if:
