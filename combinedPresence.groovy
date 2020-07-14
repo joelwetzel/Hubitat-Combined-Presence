@@ -1,5 +1,5 @@
 /**
- *  Combined Presence
+ *  Combined Presence v1.0
  *
  *  Copyright 2019 Joel Wetzel
  *
@@ -97,6 +97,3 @@ def mainPage() {
 		}
 	}
 }
-
-
-
