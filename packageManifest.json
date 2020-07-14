@@ -1,0 +1,35 @@
+{
+	"packageName": "Combined Presence",
+	"minimumHEVersion": "2.2.1",
+	"author": "Joel Wetzel",
+	"version": "1.0",
+	"dateReleased": "2020-07-14",
+	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
+	"releaseNotes": "Initial release through Hubitat Package Manager.",
+	"apps" : [
+		{
+			"id" : "fed423cf-a423-40dd-aa1d-caec4e5c9b1a",
+			"name": "Combined Presence",
+			"namespace": "joelwetzel",
+			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/combinedPresence.groovy",
+			"required": true,
+			"oauth": false
+		},
+    {
+			"id" : "79ee138e-32bc-454d-b72a-3421ea96414c",
+			"name": "Combined Presence Instance",
+			"namespace": "joelwetzel",
+			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/combinedPresenceInstance.groovy",
+			"required": true,
+			"oauth": false
+		},
+    {
+			"id" : "1e856b6a-c3f3-4291-ae52-4636d9f54ff2",
+			"name": "Advanced Combined Presence Instance",
+			"namespace": "joelwetzel",
+			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/advancedCombinedPresenceInstance.groovy",
+			"required": true,
+			"oauth": false
+		}
+	]
+}
