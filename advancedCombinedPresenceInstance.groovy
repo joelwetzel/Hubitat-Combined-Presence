@@ -1,5 +1,5 @@
 /**
- *  Advanced Combined Presence Instance
+ *  Advanced Combined Presence Instance v1.0
  *
  *  Copyright 2019 Joel Wetzel
  *
@@ -186,7 +186,7 @@ def checkForInconsistencies() {
 	def inputsAreAllPresent = true
 	def inputsAreAllNotPresent = true
 	
-	inputSensors.each { inputSensor ->
+	inputSensorsArrivingOr.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
 			inputsAreAllNotPresent = false	
 		}
@@ -198,9 +198,9 @@ def checkForInconsistencies() {
 	
 	def inputsAreInconsistent = !(inputsAreAllPresent || inputsAreAllNotPresent)
 	
-	//log.debug "inputsAreAllPresent ${inputsAreAllPresent}"
-	//log.debug "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
-	//log.debug "inputsAreInconsistent ${inputsAreInconsistent}"
+	log "inputsAreAllPresent ${inputsAreAllPresent}"
+	log "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
+	log "inputsAreInconsistent ${inputsAreInconsistent}"
 	
 	def currentTime = new Date()
 	
@@ -218,6 +218,9 @@ def checkForInconsistencies() {
 		def timeSinceConsistency = TimeCategory.minus(currentTime, lastConsistentTime)
 		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
 		
+        log "timeSinceConsistency.minutes: ${timeSinceConsistency.minutes}"
+        log "timeSinceLastWarning.hours ${timeSinceLastWarning.hours}"
+        
 		if (timeSinceConsistency.minutes > 30 && timeSinceLastWarning.hours > 24) {
 			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
 			
@@ -329,16 +332,3 @@ def log(msg) {
 		log.debug msg
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
