@@ -2,10 +2,12 @@
 	"packageName": "Combined Presence",
 	"minimumHEVersion": "2.2.1",
 	"author": "Joel Wetzel",
-	"version": "1.0",
-	"dateReleased": "2020-07-14",
+	"version": "1.01",
+	"dateReleased": "2020-07-16",
 	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
 	"releaseNotes": "Initial release through Hubitat Package Manager.",
+	"communityLink": "https://community.hubitat.com/t/release-combined-presence",
+	"documentationLink": "https://github.com/joelwetzel/Hubitat-Combined-Presence",
 	"apps" : [
 		{
 			"id" : "fed423cf-a423-40dd-aa1d-caec4e5c9b1a",
