@@ -34,6 +34,10 @@ Prerequisites:
 - Input sensors already exist
 - You've added a Virtual Presence sensor to be the output
 
+The best way to install this code is by using [Hubitat Package Manager](https://community.hubitat.com/t/beta-hubitat-package-manager).
+
+However, if you must install manually:
+
 1. On your Hubitat hub, go to the "Apps Code" page
 2. Click "+ New App"
 3. Paste in the contents of combinedPresence.groovy and click "Save"
