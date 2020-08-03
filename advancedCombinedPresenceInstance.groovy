@@ -1,7 +1,7 @@
 /**
- *  Advanced Combined Presence Instance v1.0
+ *  Advanced Combined Presence Instance v2.0
  *
- *  Copyright 2019 Joel Wetzel
+ *  Copyright 2020 Joel Wetzel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -81,14 +81,6 @@ def notificationDevice = [
 		multiple:			true
 	]
 
-def notificationNumber = [
-		name:				"notificationNumber",
-		type:				"string",
-		title:				"Phone Number for SMS Notifications",
-		description:		"Phone number for notifications.  Must be in the form (for US) +1xxxyyyzzzz.",
-		required:			false
-	]
-
 def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
@@ -114,7 +106,7 @@ def enableLogging = [
 
 preferences {
 	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Advanced Combined Presence Instance")) {
+		section(getFormat("title", "Advanced Combiner")) {
 		}
 		section(hideable: true, "If the output is Not Present, then make it arrive if:") {
 			input inputSensorsArrivingOr
@@ -140,7 +132,6 @@ preferences {
 		}
 		section(hideable: true, hidden: true, "Notifications") {
 			input notificationDevice
-			input notificationNumber
 			input notifyAboutStateChanges
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
 			input notifyAboutInconsistencies
@@ -176,7 +167,7 @@ def initialize() {
 	subscribe(inputSensorsDepartingOr, "presence", presenceChangedHandler)
 	subscribe(inputSensorsDepartingAnd, "presence", presenceChangedHandler)
 	
-	app.updateLabel("Combined Presence for ${outputSensor.displayName}")
+	app.updateLabel("Advanced Combiner for ${outputSensor.displayName}")
 	
 	runEvery1Minute(checkForInconsistencies)
 }
@@ -240,10 +231,6 @@ def checkForInconsistencies() {
 
 def sendNotification(msg) {
 	if (msg && msg.size() > 0) {
-		if (notificationNumber && notificationNumber.size() > 0) {
-			sendSms(notificationNumber, msg)
-		}
-		
 		if (notificationDevice) {
 			notificationDevice.deviceNotification(msg)
 		}
@@ -332,3 +319,4 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
