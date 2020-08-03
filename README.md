@@ -4,7 +4,7 @@ An app for Hubitat to combine two or more presence sensors to control an output 
 There are 3 types of combiners:
 - Standard Combiners (Use this for combining wifi and gps-based sensors for a single person.  It is optimized for that.)
 - Boolean-OR Combiners (Example:  If Person1 OR Person2 is home, then the virtual SomeoneIsHome sensor should be home.)
-- Advanced Combiners (All logic options.  It is a superset of what the Standard and Boolean-OR combiners can do, and you can re-create their functionality by configuring it correctly.  But almost no one will need this.)
+- Advanced Combiners (All logic options.  It is a superset of what the Standard and Boolean-OR combiners can do, and you can re-create their functionality or do other boolean operations by configuring it correctly.  But almost no one will need this.)
 
 ## Use Case 1
 You have several geofencing sensors on your phone (Alexa, Homekit, Life360, etc) and you also use a sensor that detects when your phone is on WiFi.  You can use the Standard Combiner for optimal logic of deciding whether you are home or away.
