@@ -1,7 +1,7 @@
 /**
- *  Combined Presence v1.0
+ *  Combined Presence v2.0
  *
- *  Copyright 2019 Joel Wetzel
+ *  Copyright 2020 Joel Wetzel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -87,13 +87,17 @@ def mainPage() {
 			section(getFormat("title", "${app.label}")) {
 				paragraph "Combine two or more presence sensors to control an output Virtual Presence Sensor."
 			}
-  			section("<b>Standard Bindings:</b>") {
-				app(name: "anyOpenApp", appName: "Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Combined Presence Instance</b>", multiple: true)
+  			section("<b>Standard Combiners:</b>  (Use this for combining wifi and gps-based sensors for a single person.  It is optimized for that.)") {
+				app(name: "anyOpenApp", appName: "Standard Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Standard Combiner</b>", multiple: true)
 			}
-			section("<b>Advanced Bindings:</b>") {
-				app(name: "advancedAnyOpenApp", appName: "Advanced Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Advanced Combined Presence Instance</b>", multiple: true)
+  			section("<b>Boolean-OR Combiners:</b>  (Example of use:  If Person1 OR Person2 is home, then the virtual SomeoneIsHome sensor should be home.)") {
+				app(name: "anyOpenApp", appName: "Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Boolean-OR Combiner</b>", multiple: true)
+			}
+			section("<b>Advanced Combiners:</b>  (All logic options.  It is a superset of what the Standard and Boolean-OR combiners can do, and you can re-create their functionality by configuring it correctly.  But almost no one will need this.)") {
+				app(name: "advancedAnyOpenApp", appName: "Advanced Combined Presence Instance", namespace: "joelwetzel", title: "<b>Add a new Advanced Combiner</b>", multiple: true)
 			}
 			display()
 		}
 	}
 }
+
