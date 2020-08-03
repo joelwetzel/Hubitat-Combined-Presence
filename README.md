@@ -46,12 +46,14 @@ However, if you must install manually:
 6. Paste in the contents of combinedPresenceInstance.groovy and click "Save"
 7. Click "+ New App"
 8. Paste in the contents of advancedCombinedPresenceInstance.groovy and click "Save"
-9. Go to the "Apps" page
-10. Click "+ Add User App"
-11. Choose "Combined Presence"
-12. Click "Done"
-13. Click on "Combined Presence" in your apps list
-14. Click on "Add a new combined presence instance"
-15. Choose your input presence sensors
-16. Choose your Virtual Presence sensor as the output
+9. Click "+ New App"
+10. Paste in the contents of standardCombinedPresenceInstance.groovy and click "Save"
+11. Go to the "Apps" page
+12. Click "+ Add User App"
+13. Choose "Combined Presence"
+14. Click "Done"
+15. Click on "Combined Presence" in your apps list
+16. Click on "Add a new standard combiner"
+17. Choose your input presence sensors
+18. Choose your Virtual Presence sensor as the output
 15. Click "Done"
