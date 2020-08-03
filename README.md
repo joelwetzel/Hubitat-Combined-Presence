@@ -1,17 +1,16 @@
 # Combined Presence app for Hubitat
-An app for Hubitat to combine two or more presence sensors to control an output Virtual Presence Sensor.  The basic bindings use a boolean-OR to combine them.  The advanced bindings can do more complicated combinations.
+An app for Hubitat to combine two or more presence sensors to control an output Virtual Presence Sensor.
+
+There are 3 types of combiners:
+- Standard Combiners (Use this for combining wifi and gps-based sensors for a single person.  It is optimized for that.)
+- Boolean-OR Combiners (Example:  If Person1 OR Person2 is home, then the virtual SomeoneIsHome sensor should be home.)
+- Advanced Combiners (All logic options.  It is a superset of what the Standard and Boolean-OR combiners can do, and you can re-create their functionality by configuring it correctly.  But almost no one will need this.)
 
 ## Use Case 1
-I want to make an output sensor that will be more reliable than either of the input sensors alone.  It uses a boolean-OR to combine them.  This means it will work great if:
-
-- Your input sensors only give false negatives, but do not give false positives.
-
-I can verify that presence from the Alexa app or from HomeKit satisfies this.  I can also verify that my iPhone WiFi Presence Sensor (https://github.com/joelwetzel/Hubitat-iPhone-Presence-Sensor) satisfies this.
-
-However, if your input sensors ever give false positives, then I do not recommend this app.
+You have several geofencing sensors on your phone (Alexa, Homekit, Life360, etc) and you also use a sensor that detects when your phone is on WiFi.  You can use the Standard Combiner for optimal logic of deciding whether you are home or away.
 
 ## Use Case 2
-If you have presence sensors for two people, you can use this to set a third Virtual Presence sensor for "Somebody is home", then use the departed event from it in Rule Machine to trigger events for when the last person has left the house.
+If you have presence sensors for two people, you can use a Boolean-OR Combiner to set a third Virtual Presence sensor for "Somebody is home", then use the departed event from it in Rule Machine to trigger events for when the last person has left the house.
 
 ## Use Case 3
 I have documented the advanced bindings here: (https://community.hubitat.com/t/release-combined-presence/9186/35?u=jwetzel1492)
