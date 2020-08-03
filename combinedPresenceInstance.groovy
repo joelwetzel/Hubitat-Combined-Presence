@@ -1,7 +1,7 @@
 /**
- *  Combined Presence Instance v1.0
+ *  Combined Presence Instance v2.0
  *
- *  Copyright 2019 Joel Wetzel
+ *  Copyright 2020 Joel Wetzel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -32,7 +32,7 @@ def inputSensors = [
 		name:				"inputSensors",
 		type:				"capability.presenceSensor",
 		title:				"Input Sensors",
-		description:		"The sensors that will be combined.",
+		description:		"The sensors that will be combined with a boolean OR operation.",
 		multiple:			true,
 		required:			true
 	]
@@ -42,7 +42,7 @@ def outputSensor = [
 		name:				"outputSensor",
 		type:				"capability.presenceSensor",
 		title:				"Output Sensor",
-		description:		"The virtual presence sensor that will be controlled by this instance.",
+		description:		"The virtual presence sensor that will be controlled by this combiner.",
 		multiple:			false,
 		required:			true
 	]
@@ -54,14 +54,6 @@ def notificationDevice = [
 		description:		"Send notifications to devices.  ie. push notifications to a phone.",
 		required:			false,
 		multiple:			true
-	]
-
-def notificationNumber = [
-		name:				"notificationNumber",
-		type:				"string",
-		title:				"Phone Number for SMS Notifications",
-		description:		"Phone number for notifications.  Must be in the form (for US) +1xxxyyyzzzz.",
-		required:			false
 	]
 
 def notifyAboutStateChanges = [
@@ -89,7 +81,7 @@ def enableLogging = [
 
 preferences {
 	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Combined Presence Instance")) {
+		section(getFormat("title", "Boolean-OR Combiner")) {
 		}
 		section() {
 			input inputSensors
@@ -97,7 +89,6 @@ preferences {
 		}
 		section(hideable: true, hidden: true, "Notifications") {
 			input notificationDevice
-			input notificationNumber
 			input notifyAboutStateChanges
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
 			input notifyAboutInconsistencies
@@ -130,7 +121,7 @@ def initialize() {
 
 	subscribe(inputSensors, "presence", presenceChangedHandler)
 	
-	app.updateLabel("Combined Presence for ${outputSensor.displayName}")
+	app.updateLabel("Boolean-OR Combiner for ${outputSensor.displayName}")
 	
 	runEvery1Minute(checkForInconsistencies)
 }
@@ -191,10 +182,6 @@ def checkForInconsistencies() {
 
 def sendNotification(msg) {
 	if (msg && msg.size() > 0) {
-		if (notificationNumber && notificationNumber.size() > 0) {
-			sendSms(notificationNumber, msg)
-		}
-		
 		if (notificationDevice) {
 			notificationDevice.deviceNotification(msg)
 		}
@@ -251,3 +238,4 @@ def log(msg) {
 		log.debug msg
 	}
 }
+

@@ -1,5 +1,5 @@
 /**
- *  Advanced Combined Presence Instance v2.0
+ *  Standard Combined Presence Instance v2.0
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -18,50 +18,31 @@ import groovy.time.*
 import groovy.json.*
 	
 definition(
-    name: "Advanced Combined Presence Instance",
+    name: "Standard Combined Presence Instance",
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
-    description: "This will set a virtual presence sensor to advanced combinations of all the input sensors.  It is a child app of Combined Presence.",
+    description: "This is the instance that is best to use for combining both wifi and gps-based inputs for a single person.  It is a child app of Combined Presence.",
     category: "Safety & Security",
 	iconUrl: "",
     iconX2Url: "",
     iconX3Url: "")
 
-
-def inputSensorsArrivingOr = [
-		name:				"inputSensorsArrivingOr",
+def inputSensorsGps = [
+		name:				"inputSensorsGps",
 		type:				"capability.presenceSensor",
-		title:				"ANY of these arrive",
+		title:				"Phone GPS-based and geofencing sensors",
+		multiple:			true,
+		required:			true
+	]
+
+def inputSensorsWifi = [
+		name:				"inputSensorsWifi",
+		type:				"capability.presenceSensor",
+		title:				"Phone Wifi-based sensors or fob sensors",
 		multiple:			true,
 		required:			false
 	]
-
-def inputSensorsArrivingAnd = [
-		name:				"inputSensorsArrivingAnd",
-		type:				"capability.presenceSensor",
-		title:				"ALL of these are present",
-		multiple:			true,
-		required:			false
-	]
-
-def inputSensorsDepartingOr = [
-		name:				"inputSensorsDepartingOr",
-		type:				"capability.presenceSensor",
-		title:				"ANY of these depart",
-		multiple:			true,
-		required:			false
-	]
-
-def inputSensorsDepartingAnd = [
-		name:				"inputSensorsDepartingAnd",
-		type:				"capability.presenceSensor",
-		title:				"ALL of these are not present",
-		multiple:			true,
-		required:			false
-	]
-
-
 
 def outputSensor = [
 		name:				"outputSensor",
@@ -106,25 +87,15 @@ def enableLogging = [
 
 preferences {
 	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Advanced Combiner")) {
+		section(getFormat("title", "Standard Combiner")) {
 		}
-		section(hideable: true, "If the output is Not Present, then make it arrive if:") {
-			input inputSensorsArrivingOr
-			paragraph "OR"
-			input inputSensorsArrivingAnd
-		}
-		section() {
-			paragraph ""	
-		}
-		section(hideable: true, "If the output is Present, then make it depart if:") {
-			input inputSensorsDepartingOr
-			paragraph "OR"
-			input inputSensorsDepartingAnd			
-		}
-		section() {
-			paragraph ""	
-		}
-		section() {
+		section(hideable: true, hidden: false, "Input Sensors") {
+            input inputSensorsGps
+            paragraph "You must include at least one gps or geofencing presence sensor.  Examples of this would be the Hubitat phone app, Life360, or using Alexa or HomeKit to update the state of a virtual presence sensor."
+            input inputSensorsWifi
+            paragraph "Phone Wifi-based sensors are optional.  They can help detect arrival faster.  They are not used for detecting departures, because some smartphones periodically put their Wifi to sleep.  My recommended phone wifi sensor can be found <a target=\"_blank\" href=\"https://community.hubitat.com/t/updated-iphone-wifi-presence-sensor\">here</a> and can most easily be installed by using <a target=\"_blank\" href=\"https://community.hubitat.com/t/beta-hubitat-package-manager\">Hubitat Package Manager</a>."
+        }
+        section() {
 			input outputSensor
 		}
 		section() {
@@ -135,7 +106,7 @@ preferences {
 			input notifyAboutStateChanges
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
 			input notifyAboutInconsistencies
-			paragraph "This will send notifications if your input sensors stay inconsistent for more than 30 minutes.  That usually means one of the sensors has stopped reporting, and should be checked."
+			paragraph "This will send notifications if your geofencing sensors stay inconsistent for more than 30 minutes.  That usually means one of the sensors has stopped reporting, and should be checked."
 		}
 		section() {
 			input enableLogging
@@ -162,12 +133,10 @@ def initialize() {
 	unschedule()
 	unsubscribe()
 
-	subscribe(inputSensorsArrivingOr, "presence", presenceChangedHandler)
-	subscribe(inputSensorsArrivingAnd, "presence", presenceChangedHandler)
-	subscribe(inputSensorsDepartingOr, "presence", presenceChangedHandler)
-	subscribe(inputSensorsDepartingAnd, "presence", presenceChangedHandler)
+	subscribe(inputSensorsWifi, "presence", presenceChangedHandler)
+	subscribe(inputSensorsGps, "presence", presenceChangedHandler)
 	
-	app.updateLabel("Advanced Combiner for ${outputSensor.displayName}")
+	app.updateLabel("Standard Combiner for ${outputSensor.displayName}")
 	
 	runEvery1Minute(checkForInconsistencies)
 }
@@ -177,7 +146,7 @@ def checkForInconsistencies() {
 	def inputsAreAllPresent = true
 	def inputsAreAllNotPresent = true
 	
-	inputSensorsArrivingOr.each { inputSensor ->
+	inputSensorsGps.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
 			inputsAreAllNotPresent = false	
 		}
@@ -247,39 +216,32 @@ def presenceChangedHandler(evt) {
 	
 	if (!oldPresent) {
 		def anyHaveArrived = false
-		inputSensorsArrivingOr.each { inputSensor ->
+		inputSensorsWifi.each { inputSensor ->
 			if (inputSensor.currentValue("presence") == "present" && inputSensor.name == evt.device.name) {
 				//log.debug "ARRIVED: ${inputSensor.name}"
 				anyHaveArrived = true	
 			}
 		}
-		
-		def allHaveArrived = inputSensorsArrivingAnd && inputSensorsArrivingAnd.size() > 0
-		inputSensorsArrivingAnd.each { inputSensor ->
-			if (inputSensor.currentValue("presence") != "present") {
-				allHaveArrived = false	
+		inputSensorsGps.each { inputSensor ->
+			if (inputSensor.currentValue("presence") == "present" && inputSensor.name == evt.device.name) {
+				//log.debug "ARRIVED: ${inputSensor.name}"
+				anyHaveArrived = true	
 			}
 		}
+
 		
-		newPresent = anyHaveArrived || allHaveArrived
+		newPresent = anyHaveArrived
 	}
 	else {
 		def anyHaveDeparted = false
-		inputSensorsDepartingOr.each { inputSensor ->
+		inputSensorsGps.each { inputSensor ->
 			if (inputSensor.currentValue("presence") != "present" && inputSensor.name == evt.device.name) {
 				//log.debug "DEPARTED: ${inputSensor.name}"
 				anyHaveDeparted = true	
 			}
 		}
 		
-		def allHaveDeparted = inputSensorsDepartingAnd && inputSensorsDepartingAnd.size() > 0
-		inputSensorsDepartingAnd.each { inputSensor ->
-			if (inputSensor.currentValue("presence") == "present") {
-				allHaveDeparted = false	
-			}
-		}
-		
-		newPresent = !(anyHaveDeparted || allHaveDeparted)
+		newPresent = !(anyHaveDeparted)
 	}
 	
 	if (newPresent) {
@@ -319,4 +281,5 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
