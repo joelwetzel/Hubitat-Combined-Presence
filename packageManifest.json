@@ -2,10 +2,10 @@
 	"packageName": "Combined Presence",
 	"minimumHEVersion": "2.2.1",
 	"author": "Joel Wetzel",
-	"version": "1.01",
-	"dateReleased": "2020-07-16",
+	"version": "2.0",
+	"dateReleased": "2020-08-3",
 	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
-	"releaseNotes": "Initial release through Hubitat Package Manager.",
+	"releaseNotes": "Release of V2.0!  It introduces the new Standard Combiner, which should be used for most cases.  Much of the text and descriptions have been updated to guide users on how to use the combiners.",
 	"communityLink": "https://community.hubitat.com/t/release-combined-presence",
 	"documentationLink": "https://github.com/joelwetzel/Hubitat-Combined-Presence",
 	"apps" : [
@@ -30,6 +30,14 @@
 			"name": "Advanced Combined Presence Instance",
 			"namespace": "joelwetzel",
 			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/advancedCombinedPresenceInstance.groovy",
+			"required": true,
+			"oauth": false
+		},
+    {
+			"id" : "9519f78e-6876-453f-b52e-1bdf704fdf06",
+			"name": "Standard Combined Presence Instance",
+			"namespace": "joelwetzel",
+			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/V2.0/standardCombinedPresenceInstance.groovy",
 			"required": true,
 			"oauth": false
 		}
