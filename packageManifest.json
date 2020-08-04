@@ -37,7 +37,7 @@
 			"id" : "9519f78e-6876-453f-b52e-1bdf704fdf06",
 			"name": "Standard Combined Presence Instance",
 			"namespace": "joelwetzel",
-			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/V2.0/standardCombinedPresenceInstance.groovy",
+			"location": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/standardCombinedPresenceInstance.groovy",
 			"required": true,
 			"oauth": false
 		}
