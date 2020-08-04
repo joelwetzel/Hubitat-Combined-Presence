@@ -1,5 +1,5 @@
 /**
- *  Standard Combined Presence Instance v2.0
+ *  Standard Combined Presence Instance v2.01
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -31,7 +31,7 @@ definition(
 def inputSensorsGps = [
 		name:				"inputSensorsGps",
 		type:				"capability.presenceSensor",
-		title:				"Phone GPS-based and geofencing sensors",
+		title:				"Phone GPS-based, phone geofencing, and fob sensors",
 		multiple:			true,
 		required:			true
 	]
@@ -39,7 +39,7 @@ def inputSensorsGps = [
 def inputSensorsWifi = [
 		name:				"inputSensorsWifi",
 		type:				"capability.presenceSensor",
-		title:				"Phone Wifi-based sensors or fob sensors",
+		title:				"Phone Wifi-based sensors",
 		multiple:			true,
 		required:			false
 	]
@@ -91,7 +91,7 @@ preferences {
 		}
 		section(hideable: true, hidden: false, "Input Sensors") {
             input inputSensorsGps
-            paragraph "You must include at least one gps or geofencing presence sensor.  Examples of this would be the Hubitat phone app, Life360, or using Alexa or HomeKit to update the state of a virtual presence sensor."
+            paragraph "You must include at least one gps, geofencing, or fob presence sensor.  Examples of this would be the Hubitat phone app, Life360, or using Alexa or HomeKit to update the state of a virtual presence sensor.  Best performance will come from having more than one sensor in here."
             input inputSensorsWifi
             paragraph "Phone Wifi-based sensors are optional.  They can help detect arrival faster.  They are not used for detecting departures, because some smartphones periodically put their Wifi to sleep.  My recommended phone wifi sensor can be found <a target=\"_blank\" href=\"https://community.hubitat.com/t/updated-iphone-wifi-presence-sensor\">here</a> and can most easily be installed by using <a target=\"_blank\" href=\"https://community.hubitat.com/t/beta-hubitat-package-manager\">Hubitat Package Manager</a>."
         }
