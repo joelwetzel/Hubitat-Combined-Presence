@@ -2,7 +2,7 @@
 	"packageName": "Combined Presence",
 	"minimumHEVersion": "2.2.1",
 	"author": "Joel Wetzel",
-	"version": "2.02",
+	"version": "2.03",
 	"dateReleased": "2020-08-4",
 	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
 	"releaseNotes": "Release of V2.02!  It introduces the new Standard Combiner, which should be used for most cases.  Much of the text and descriptions have been updated to guide users on how to use the combiners.",
