@@ -63,14 +63,6 @@ def notifyAboutStateChanges = [
 		default:			false	
 	]
 
-def notifyAboutInconsistencies = [
-		name:				"notifyAboutInconsistencies",
-		type:				"bool",
-		title:				"Notify about inconsistent Inputs for more than 30 minutes",
-		description:		"Send notifications if input sensors have inconsistent values for an extended period.",
-		default:			false	
-	]
-
 def enableLogging = [
 		name:				"enableLogging",
 		type:				"bool",
@@ -91,8 +83,6 @@ preferences {
 			input notificationDevice
 			input notifyAboutStateChanges
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
-			input notifyAboutInconsistencies
-			paragraph "This will send notifications if your input sensors stay inconsistent for more than 30 minutes.  That usually means one of the sensors has stopped reporting, and should be checked."
 		}
 		section() {
 			input enableLogging
@@ -122,61 +112,6 @@ def initialize() {
 	subscribe(inputSensors, "presence", presenceChangedHandler)
 	
 	app.updateLabel("Boolean-OR Combiner for ${outputSensor.displayName}")
-	
-	runEvery1Minute(checkForInconsistencies)
-}
-
-
-def checkForInconsistencies() {
-	def inputsAreAllPresent = true
-	def inputsAreAllNotPresent = true
-	
-	inputSensors.each { inputSensor ->
-		if (inputSensor.currentValue("presence") == "present") {
-			inputsAreAllNotPresent = false	
-		}
-		
-		if (inputSensor.currentValue("presence") == "not present") {
-			inputsAreAllPresent = false	
-		}
-	}
-	
-	def inputsAreInconsistent = !(inputsAreAllPresent || inputsAreAllNotPresent)
-	
-	//log.debug "inputsAreAllPresent ${inputsAreAllPresent}"
-	//log.debug "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
-	//log.debug "inputsAreInconsistent ${inputsAreInconsistent}"
-	
-	def currentTime = new Date()
-	
-	if (inputsAreInconsistent) {
-		def lastConsistentTime = new Date()
-		if (state.lastConsistentTime) {
-			lastConsistentTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastConsistentTime)
-		}
-		
-		def lastInconsistencyWarningTime = new Date()
-		if (state.lastInconsistencyWarningTime) {
-			lastInconsistencyWarningTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastInconsistencyWarningTime)
-		}
-		
-		def timeSinceConsistency = TimeCategory.minus(currentTime, lastConsistentTime)
-		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
-		
-		if (timeSinceConsistency.minutes > 30 && timeSinceLastWarning.hours > 24) {
-			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
-			
-			log(msg)
-			if (notifyAboutInconsistencies) {
-				sendNotification(msg)
-			}
-			
-			state.lastInconsistencyWarningTime = currentTime
-		}
-	}
-	else {
-		state.lastConsistentTime = currentTime
-	}
 }
 
 
@@ -238,4 +173,5 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
