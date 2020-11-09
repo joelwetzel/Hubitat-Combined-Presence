@@ -1,5 +1,5 @@
 /**
- *  Standard Combined Presence Instance v2.01
+ *  Standard Combined Presence Instance v2.1
  *
  *  Copyright 2020 Joel Wetzel
  *
