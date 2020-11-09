@@ -137,12 +137,19 @@ def initialize() {
 	subscribe(inputSensorsGps, "presence", presenceChangedHandler)
 	
 	app.updateLabel("Standard Combiner for ${outputSensor.displayName}")
+    
+    use (groovy.time.TimeCategory) {
+        state.lastInconsistencyWarningTime = new Date()-24.hours
+        state.lastConsistentTime = new Date()
+    }
 	
 	runEvery1Minute(checkForInconsistencies)
 }
 
 
 def checkForInconsistencies() {
+    log "***** checkForInconsistencies()"
+    
 	def inputsAreAllPresent = true
 	def inputsAreAllNotPresent = true
 	
@@ -179,12 +186,16 @@ def checkForInconsistencies() {
 		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
 		
         log "timeSinceConsistency.minutes: ${timeSinceConsistency.minutes}"
+        log "timeSinceConsistency.hours: ${timeSinceConsistency.hours}"
+        log "timeSinceConsistency.days: ${timeSinceConsistency.days}"
         log "timeSinceLastWarning.hours ${timeSinceLastWarning.hours}"
+        log "timeSinceLastWarning.days ${timeSinceLastWarning.days}"
         
-		if (timeSinceConsistency.minutes > 30 && timeSinceLastWarning.hours > 24) {
+		if ((timeSinceConsistency.minutes > 30 || timeSinceConsistency.hours > 0 || timeSinceConsistency.days > 0) && (timeSinceLastWarning.hours > 18 || timeSinceLastWarning.days > 0)) {
 			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
 			
 			log(msg)
+            
 			if (notifyAboutInconsistencies) {
 				sendNotification(msg)
 			}
@@ -281,5 +292,6 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
 
