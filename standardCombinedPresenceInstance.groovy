@@ -252,6 +252,17 @@ def presenceChangedHandler(evt) {
 			}
 		}
 		
+		if (anyHaveDeparted) {
+			// sometimes GPS sensors can be faulty and erroneously depart without actually physically leaving
+			// however, if there is at least one WiFi sensor, and that sensor can ping the device,
+			// then that device is for sure still present
+			// at worst, using the iPhone WiFi Presence Sensor driver, this value will be stale by 1 min
+			def wifiSensorsThinkOtherwise = inputSensorsWifi.any { it.currentValue("presence") == "present" }
+			if (wifiSensorsThinkOtherwise) {
+				log "GPS sensor(s) departed, but wifi sensor(s) can still detect the device"
+				anyHaveDeparted = false
+			}
+		}
 		newPresent = !(anyHaveDeparted)
 	}
 	
