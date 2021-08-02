@@ -1,5 +1,5 @@
 /**
- *  Standard Combined Presence Instance v2.1
+ *  Combined Presence - Standard Combiner v2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -18,7 +18,7 @@ import groovy.time.*
 import groovy.json.*
 	
 definition(
-    name: "Standard Combined Presence Instance",
+    name: "Combined Presence - Standard Combiner",
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
@@ -133,8 +133,12 @@ def initialize() {
 	unschedule()
 	unsubscribe()
 
-	subscribe(inputSensorsWifi, "presence", presenceChangedHandler)
-	subscribe(inputSensorsGps, "presence", presenceChangedHandler)
+    // Wifi-based sensors can only trigger arrival
+	subscribe(inputSensorsWifi, "presence.present", arrivedHandler)
+
+    // Geofencing sensors can trigger EITHER arrival or departure
+    subscribe(inputSensorsGps, "presence.present", arrivedHandler)
+    subscribe(inputSensorsGps, "presence.not present", departedHandler)
 	
 	app.updateLabel("Standard Combiner for ${outputSensor.displayName}")
     
@@ -218,64 +222,40 @@ def sendNotification(msg) {
 }
 
 
-def presenceChangedHandler(evt) {
-	log "PRESENCE CHANGED for: ${evt.device.name}"	
+def arrivedHandler(evt) {
+	log "${evt.device.name} arrived."	
+	//log.debug groovy.json.JsonOutput.toJson(evt)
+
+	def oldPresent = outputSensor.currentValue("presence") == "present"
+	def newPresent = true            // Something arrived!
+	
+	if (!oldPresent && newPresent) {
+		outputSensor.arrived()
+		
+        log "${outputSensor.displayName}.arrived()"	
+
+        if (notifyAboutStateChanges) {
+            sendNotification("Arrived: ${outputSensor.displayName}")
+        }
+	}
+}
+
+
+def departedHandler(evt) {
+	log "${evt.device.name} departed."	
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = false
 	
-	if (!oldPresent) {
-		def anyHaveArrived = false
-		inputSensorsWifi.each { inputSensor ->
-			if (inputSensor.currentValue("presence") == "present" && inputSensor.name == evt.device.name) {
-				//log.debug "ARRIVED: ${inputSensor.name}"
-				anyHaveArrived = true	
-			}
-		}
-		inputSensorsGps.each { inputSensor ->
-			if (inputSensor.currentValue("presence") == "present" && inputSensor.name == evt.device.name) {
-				//log.debug "ARRIVED: ${inputSensor.name}"
-				anyHaveArrived = true	
-			}
-		}
-
-		
-		newPresent = anyHaveArrived
-	}
-	else {
-		def anyHaveDeparted = false
-		inputSensorsGps.each { inputSensor ->
-			if (inputSensor.currentValue("presence") != "present" && inputSensor.name == evt.device.name) {
-				//log.debug "DEPARTED: ${inputSensor.name}"
-				anyHaveDeparted = true	
-			}
-		}
-		
-		newPresent = !(anyHaveDeparted)
-	}
-	
-	if (newPresent) {
-		outputSensor.arrived()
-		
-		if (!oldPresent) {
-			log "${outputSensor.displayName}.arrived()"	
-			
-			if (notifyAboutStateChanges) {
-				sendNotification("Arrived: ${outputSensor.displayName}")
-			}
-		}
-	}
-	else {
+	if (oldPresent && !newPresent) {
 		outputSensor.departed()
 
-		if (oldPresent) {
-			log "${outputSensor.displayName}.departed()"
+    	log "${outputSensor.displayName}.departed()"
 			
-			if (notifyAboutStateChanges) {
-				sendNotification("Departed: ${outputSensor.displayName}")
-			}
-		}
+        if (notifyAboutStateChanges) {
+            sendNotification("Departed: ${outputSensor.displayName}")
+        }
 	}
 }
 
