@@ -1,5 +1,5 @@
 /**
- *  Combined Presence v2.1
+ *  Combined Presence v2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
