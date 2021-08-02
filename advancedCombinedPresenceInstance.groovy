@@ -1,5 +1,5 @@
 /**
- *  Advanced Combined Presence Instance v2.1
+ *  Advanced Combined Presence Instance v2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
