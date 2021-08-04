@@ -1,5 +1,5 @@
 /**
- *  Advanced Combined Presence Instance v2.2
+ *  Advanced Combined Presence Instance v2.2.1
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -18,7 +18,7 @@ import groovy.time.*
 import groovy.json.*
 	
 definition(
-    name: "Advanced Combined Presence Instance",
+    name: "Combined Presence Advanced Combiner",
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
@@ -330,5 +330,6 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
 
