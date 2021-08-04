@@ -1,5 +1,5 @@
 /**
- *  Combined Presence Instance v2.2
+ *  Combined Presence Instance v2.2.1
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -17,7 +17,7 @@
 import groovy.time.*
 	
 definition(
-    name: "Combined Presence Instance",
+    name: "Combined Presence Boolean Combiner",
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
@@ -173,5 +173,6 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
 
