@@ -1,5 +1,5 @@
 /**
- *  Combined Presence - Standard Combiner v2.2
+ *  Combined Presence - Standard Combiner v2.2.1
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -18,7 +18,7 @@ import groovy.time.*
 import groovy.json.*
 	
 definition(
-    name: "Combined Presence - Standard Combiner",
+    name: "Combined Presence Standard Combiner",
 	parent: "joelwetzel:Combined Presence",
     namespace: "joelwetzel",
     author: "Joel Wetzel",
@@ -272,6 +272,7 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
 
 
 
