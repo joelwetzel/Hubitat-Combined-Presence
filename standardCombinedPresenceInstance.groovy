@@ -147,7 +147,7 @@ def initialize() {
         state.lastConsistentTime = new Date()
     }
 	
-	runEvery1Minute(checkForInconsistencies)
+    state.SentInconsistentMessage = false
 }
 
 
@@ -166,52 +166,36 @@ def checkForInconsistencies() {
 			inputsAreAllPresent = false	
 		}
 	}
-	
 	def inputsAreInconsistent = !(inputsAreAllPresent || inputsAreAllNotPresent)
-	
+
 	log "inputsAreAllPresent ${inputsAreAllPresent}"
 	log "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
 	log "inputsAreInconsistent ${inputsAreInconsistent}"
-	
-	def currentTime = new Date()
-	
 	if (inputsAreInconsistent) {
-		def lastConsistentTime = new Date()
-		if (state.lastConsistentTime) {
-			lastConsistentTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastConsistentTime)
-		}
-		
-		def lastInconsistencyWarningTime = new Date()
-		if (state.lastInconsistencyWarningTime) {
-			lastInconsistencyWarningTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastInconsistencyWarningTime)
-		}
-		
-		def timeSinceConsistency = TimeCategory.minus(currentTime, lastConsistentTime)
-		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
-		
-        log "timeSinceConsistency.minutes: ${timeSinceConsistency.minutes}"
-        log "timeSinceConsistency.hours: ${timeSinceConsistency.hours}"
-        log "timeSinceConsistency.days: ${timeSinceConsistency.days}"
-        log "timeSinceLastWarning.hours ${timeSinceLastWarning.hours}"
-        log "timeSinceLastWarning.days ${timeSinceLastWarning.days}"
-        
-		if ((timeSinceConsistency.minutes > 30 || timeSinceConsistency.hours > 0 || timeSinceConsistency.days > 0) && (timeSinceLastWarning.hours > 18 || timeSinceLastWarning.days > 0)) {
-			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
-			
-			log(msg)
-            
-			if (notifyAboutInconsistencies) {
-				sendNotification(msg)
-			}
-			
-			state.lastInconsistencyWarningTime = currentTime
-		}
-	}
-	else {
-		state.lastConsistentTime = currentTime
-	}
+        if (!state.AlreadyInconsistant&&!state.SentInconsistentMessage){
+            state.AlreadyInconsistant = true
+            runIn(1800, SendInconsistentMessage)
+        }
+    }
+    else {
+        state.AlreadyInconsistant = false
+        unschedule(SendInconsistentMessage)
+        unschedule(ResetNotify)
+    }
 }
 
+def SendInconsistentMessage() {
+			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
+			log(msg)
+			sendNotification(msg)
+            state.SentInconsistentMessage = true
+            runIn(60*60*23.5,ResetNotify)
+}
+
+def ResetNotify() {
+        state.SentInconsistentMessage = false
+	checkForInconsistencies()
+}
 
 def sendNotification(msg) {
 	if (msg && msg.size() > 0) {
@@ -238,6 +222,10 @@ def arrivedHandler(evt) {
             sendNotification("Arrived: ${outputSensor.displayName}")
         }
 	}
+	
+    if (notifyAboutInconsistencies){
+        checkForInconsistencies()
+    }
 }
 
 
@@ -257,6 +245,10 @@ def departedHandler(evt) {
             sendNotification("Departed: ${outputSensor.displayName}")
         }
 	}
+	
+    if (notifyAboutInconsistencies){
+        checkForInconsistencies()
+    }
 }
 
 
@@ -272,7 +264,5 @@ def log(msg) {
 		log.debug msg
 	}
 }
-
-
 
 
