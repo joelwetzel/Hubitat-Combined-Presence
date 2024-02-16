@@ -15,7 +15,7 @@
  */
 
 import groovy.time.*
-	
+
 definition(
     name: "Combined Presence Boolean Combiner",
 	parent: "joelwetzel:Combined Presence",
@@ -60,7 +60,7 @@ def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
 		title:				"Notify about state changes to the Output sensor",
-		default:			false	
+		defaultValue:			false
 	]
 
 def enableLogging = [
@@ -72,10 +72,8 @@ def enableLogging = [
 	]
 
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Boolean-OR Combiner")) {
-		}
-		section() {
+	page(name: "mainPage", title: "Combined Presence - Boolean-OR Combiner", install: true, uninstall: true) {
+		section(hideable: true, hidden: false, "Input Sensors") {
 			input inputSensors
 			input outputSensor
 		}
@@ -109,9 +107,11 @@ def initialize() {
 	unschedule()
 	unsubscribe()
 
-	subscribe(inputSensors, "presence", presenceChangedHandler)
-	
+	subscribe(inputSensors, "presence", "presenceChangedHandler")
+
 	app.updateLabel("Boolean-OR Combiner for ${outputSensor.displayName}")
+
+    setBooleanOrOutputState()
 }
 
 
@@ -123,42 +123,43 @@ def sendNotification(msg) {
 	}
 }
 
+def setBooleanOrOutputState() {
+    def present = false
 
-def presenceChangedHandler(evt) {
-	log "PRESENCE CHANGED for: ${evt.device.name}"
-	
-	def present = false
-	
 	inputSensors.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
-			present = true	
+			present = true
 		}
 	}
-	
+
 	def oldPresent = outputSensor.currentValue("presence")
-	
+
 	if (present) {
-		outputSensor.arrived()
-		
 		if (oldPresent != "present") {
 			log "${outputSensor.displayName}.arrived()"
-			
+     		outputSensor.arrived()
+
 			if (notifyAboutStateChanges) {
 				sendNotification("Arrived: ${outputSensor.displayName}")
 			}
 		}
 	}
 	else {
-		outputSensor.departed()
-
 		if (oldPresent == "present") {
 			log "${outputSensor.displayName}.departed()"
-			
+    		outputSensor.departed()
+
 			if (notifyAboutStateChanges) {
 				sendNotification("Departed: ${outputSensor.displayName}")
 			}
 		}
 	}
+}
+
+def presenceChangedHandler(evt) {
+	log "PRESENCE CHANGED for: ${evt.device.name}"
+
+	setBooleanOrOutputState()
 }
 
 
@@ -173,6 +174,3 @@ def log(msg) {
 		log.debug msg
 	}
 }
-
-
-

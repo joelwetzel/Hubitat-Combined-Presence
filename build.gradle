@@ -1,0 +1,39 @@
+plugins {
+    id 'groovy'
+}
+
+// Not using standard layout, need to specify folders.
+sourceSets {
+    test {
+        groovy {
+            srcDirs = ['tests', 'utils']
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    // hubitat_ci repository
+    maven {
+        url System.getenv("MAVEN_ENDPOINT")
+        credentials {
+            username "anonymous"
+            password System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN")
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'org.codehaus.groovy:groovy-all:2.5.4' // groovy itself
+    testImplementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.0'
+    testImplementation "org.spockframework:spock-core:1.2-groovy-2.5" // spock framework
+    testImplementation "me.biocomp.hubitat_ci:${System.getenv("MAVEN_ARTIFACT_ID") ?: 'hubitat_ci'}:0.20" // hubitat_ci
+    testImplementation group: 'cglib', name: 'cglib-nodep', version: '3.3.0'
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+    }
+}

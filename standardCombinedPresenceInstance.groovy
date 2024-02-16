@@ -16,7 +16,7 @@
 
 import groovy.time.*
 import groovy.json.*
-	
+
 definition(
     name: "Combined Presence Standard Combiner",
 	parent: "joelwetzel:Combined Presence",
@@ -66,7 +66,7 @@ def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
 		title:				"Notify about state changes to the Output sensor",
-		default:			false	
+		defaultValue:			false
 	]
 
 def notifyAboutInconsistencies = [
@@ -74,7 +74,7 @@ def notifyAboutInconsistencies = [
 		type:				"bool",
 		title:				"Notify about inconsistent Inputs for more than 30 minutes",
 		description:		"Send notifications if input sensors have inconsistent values for an extended period.",
-		default:			false	
+		defaultValue:			false
 	]
 
 def enableLogging = [
@@ -86,9 +86,7 @@ def enableLogging = [
 	]
 
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
-		section(getFormat("title", "Standard Combiner")) {
-		}
+	page(name: "mainPage", title: "Combined Presence - Standard Combiner", install: true, uninstall: true) {
 		section(hideable: true, hidden: false, "Input Sensors") {
             input inputSensorsGps
             paragraph "You must include at least one gps, geofencing, or fob presence sensor.  Examples of this would be the Hubitat phone app, Life360, or using Alexa or HomeKit to update the state of a virtual presence sensor.  Best performance will come from having more than one sensor in here."
@@ -99,7 +97,7 @@ preferences {
 			input outputSensor
 		}
 		section() {
-			paragraph ""	
+			paragraph ""
 		}
 		section(hideable: true, hidden: true, "Notifications") {
 			input notificationDevice
@@ -134,76 +132,78 @@ def initialize() {
 	unsubscribe()
 
     // Wifi-based sensors can only trigger arrival
-	subscribe(inputSensorsWifi, "presence.present", arrivedHandler)
+	subscribe(inputSensorsWifi, "presence.present", "arrivedHandler")
 
     // Geofencing sensors can trigger EITHER arrival or departure
-    subscribe(inputSensorsGps, "presence.present", arrivedHandler)
-    subscribe(inputSensorsGps, "presence.not present", departedHandler)
-	
+    subscribe(inputSensorsGps, "presence.present", "arrivedHandler")
+    subscribe(inputSensorsGps, "presence.not present", "departedHandler")
+
 	app.updateLabel("Standard Combiner for ${outputSensor.displayName}")
-    
+
     use (groovy.time.TimeCategory) {
         state.lastInconsistencyWarningTime = new Date()-24.hours
         state.lastConsistentTime = new Date()
     }
-	
+
+    setBooleanOrOutputState()
+
 	runEvery1Minute(checkForInconsistencies)
 }
 
 
 def checkForInconsistencies() {
     log "***** checkForInconsistencies()"
-    
+
 	def inputsAreAllPresent = true
 	def inputsAreAllNotPresent = true
-	
+
 	inputSensorsGps.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
-			inputsAreAllNotPresent = false	
+			inputsAreAllNotPresent = false
 		}
-		
+
 		if (inputSensor.currentValue("presence") == "not present") {
-			inputsAreAllPresent = false	
+			inputsAreAllPresent = false
 		}
 	}
-	
+
 	def inputsAreInconsistent = !(inputsAreAllPresent || inputsAreAllNotPresent)
-	
+
 	log "inputsAreAllPresent ${inputsAreAllPresent}"
 	log "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
 	log "inputsAreInconsistent ${inputsAreInconsistent}"
-	
+
 	def currentTime = new Date()
-	
+
 	if (inputsAreInconsistent) {
 		def lastConsistentTime = new Date()
 		if (state.lastConsistentTime) {
 			lastConsistentTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastConsistentTime)
 		}
-		
+
 		def lastInconsistencyWarningTime = new Date()
 		if (state.lastInconsistencyWarningTime) {
 			lastInconsistencyWarningTime = Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", state.lastInconsistencyWarningTime)
 		}
-		
+
 		def timeSinceConsistency = TimeCategory.minus(currentTime, lastConsistentTime)
 		def timeSinceLastWarning = TimeCategory.minus(currentTime, lastInconsistencyWarningTime)
-		
+
         log "timeSinceConsistency.minutes: ${timeSinceConsistency.minutes}"
         log "timeSinceConsistency.hours: ${timeSinceConsistency.hours}"
         log "timeSinceConsistency.days: ${timeSinceConsistency.days}"
         log "timeSinceLastWarning.hours ${timeSinceLastWarning.hours}"
         log "timeSinceLastWarning.days ${timeSinceLastWarning.days}"
-        
+
 		if ((timeSinceConsistency.minutes > 30 || timeSinceConsistency.hours > 0 || timeSinceConsistency.days > 0) && (timeSinceLastWarning.hours > 18 || timeSinceLastWarning.days > 0)) {
 			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
-			
+
 			log(msg)
-            
+
 			if (notifyAboutInconsistencies) {
 				sendNotification(msg)
 			}
-			
+
 			state.lastInconsistencyWarningTime = currentTime
 		}
 	}
@@ -223,16 +223,16 @@ def sendNotification(msg) {
 
 
 def arrivedHandler(evt) {
-	log "${evt.device.name} arrived."	
+	log "${evt.device.name} arrived."
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = true            // Something arrived!
-	
+
 	if (!oldPresent && newPresent) {
 		outputSensor.arrived()
-		
-        log "${outputSensor.displayName}.arrived()"	
+
+        log "${outputSensor.displayName}.arrived()"
 
         if (notifyAboutStateChanges) {
             sendNotification("Arrived: ${outputSensor.displayName}")
@@ -242,20 +242,59 @@ def arrivedHandler(evt) {
 
 
 def departedHandler(evt) {
-	log "${evt.device.name} departed."	
+	log "${evt.device.name} departed."
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = false
-	
+
 	if (oldPresent && !newPresent) {
 		outputSensor.departed()
 
     	log "${outputSensor.displayName}.departed()"
-			
+
         if (notifyAboutStateChanges) {
             sendNotification("Departed: ${outputSensor.displayName}")
         }
+	}
+}
+
+def setBooleanOrOutputState() {
+    def present = false
+
+	inputSensorsGps.each { inputSensor ->
+		if (inputSensor.currentValue("presence") == "present") {
+			present = true
+		}
+	}
+
+	inputSensorsWifi.each { inputSensor ->
+		if (inputSensor.currentValue("presence") == "present") {
+			present = true
+		}
+	}
+
+	def oldPresent = outputSensor.currentValue("presence")
+
+	if (present) {
+		if (oldPresent != "present") {
+			log "${outputSensor.displayName}.arrived()"
+     		outputSensor.arrived()
+
+			if (notifyAboutStateChanges) {
+				sendNotification("Arrived: ${outputSensor.displayName}")
+			}
+		}
+	}
+	else {
+		if (oldPresent == "present") {
+			log "${outputSensor.displayName}.departed()"
+    		outputSensor.departed()
+
+			if (notifyAboutStateChanges) {
+				sendNotification("Departed: ${outputSensor.displayName}")
+			}
+		}
 	}
 }
 
@@ -272,7 +311,3 @@ def log(msg) {
 		log.debug msg
 	}
 }
-
-
-
-
