@@ -141,8 +141,8 @@ def initialize() {
 	app.updateLabel("Standard Combiner for ${outputSensor.displayName}")
 
     use (groovy.time.TimeCategory) {
-        state.lastInconsistencyWarningTime = new Date()-24.hours
-        state.lastConsistentTime = new Date()
+        state.lastInconsistencyWarningTime = (new Date()-24.hours).format("yyyy-MM-dd'T'HH:mm:ssZ")
+        state.lastConsistentTime = (new Date()).format("yyyy-MM-dd'T'HH:mm:ssZ")
     }
 
     setBooleanOrOutputState()
@@ -151,19 +151,28 @@ def initialize() {
 }
 
 
-def checkForInconsistencies() {
+def checkForInconsistencies(_) {
     log "***** checkForInconsistencies()"
 
 	def inputsAreAllPresent = true
 	def inputsAreAllNotPresent = true
 
-	inputSensorsGps.each { inputSensor ->
+    def allInputSensors = []
+    allInputSensors.addAll(inputSensorsGps)
+    allInputSensors.addAll(inputSensorsWifi)
+
+    def present = []
+    def notPresent = []
+
+	allInputSensors.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
 			inputsAreAllNotPresent = false
+            present.add(inputSensor.displayName)
 		}
 
 		if (inputSensor.currentValue("presence") == "not present") {
 			inputsAreAllPresent = false
+            notPresent.add(inputSensor.displayName)
 		}
 	}
 
@@ -171,7 +180,7 @@ def checkForInconsistencies() {
 
 	log "inputsAreAllPresent ${inputsAreAllPresent}"
 	log "inputsAreAllNotPresent ${inputsAreAllNotPresent}"
-	log "inputsAreInconsistent ${inputsAreInconsistent}"
+	log "inputsAreInconsistent ${inputsAreInconsistent}, present: ${present.join(',')}, not present: ${notPresent.join(',')}"
 
 	def currentTime = new Date()
 
@@ -196,7 +205,7 @@ def checkForInconsistencies() {
         log "timeSinceLastWarning.days ${timeSinceLastWarning.days}"
 
 		if ((timeSinceConsistency.minutes > 30 || timeSinceConsistency.hours > 0 || timeSinceConsistency.days > 0) && (timeSinceLastWarning.hours > 18 || timeSinceLastWarning.days > 0)) {
-			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating."
+			def msg = "Input sensors for ${outputSensor.displayName} have been inconsistent for 30 minutes.  This may mean one of your presence sensors is not updating. present: ${present.join(',')}, not present: ${notPresent.join(',')}"
 
 			log(msg)
 
@@ -204,11 +213,11 @@ def checkForInconsistencies() {
 				sendNotification(msg)
 			}
 
-			state.lastInconsistencyWarningTime = currentTime
+			state.lastInconsistencyWarningTime = currentTime.format("yyyy-MM-dd'T'HH:mm:ssZ")
 		}
 	}
 	else {
-		state.lastConsistentTime = currentTime
+		state.lastConsistentTime = currentTime.format("yyyy-MM-dd'T'HH:mm:ssZ")
 	}
 }
 
