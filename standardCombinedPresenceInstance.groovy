@@ -231,22 +231,25 @@ def arrivedHandler(evt) {
 	log "${evt.device.name} arrived."	
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
-	log("False positive setting: ${falsePositive}. Delay set to ${falsePositiveDelay}")
+	log "False positive setting: ${falsePositive}. Delay set to ${falsePositiveDelay}"
 	if (falsePositive) {
 			pauseExecution(falsePositiveDelay * 1000)
 	}
 	
+	def inputPresence = evt.device.currentValue("presence") == "present"
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = true            // Something arrived!
 	
-	if (!oldPresent && newPresent) {
-		outputSensor.arrived()
-		
-        log "${outputSensor.displayName}.arrived()"	
+	if (inputPresence && newPresent) {
+		if (!oldPresent && newPresent) {
+			outputSensor.arrived()
+			
+			log "${outputSensor.displayName}.arrived()"	
 
-        if (notifyAboutStateChanges) {
-            sendNotification("Arrived: ${outputSensor.displayName}")
-        }
+			if (notifyAboutStateChanges) {
+				sendNotification("Arrived: ${outputSensor.displayName}")
+			}
+		}
 	}
 }
 
@@ -255,22 +258,25 @@ def departedHandler(evt) {
 	log "${evt.device.name} departed."	
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
-	log("False positive setting: ${falsePositive}. Delay set to ${falsePositiveDelay}")
+	log "False positive setting: ${falsePositive}. Delay set to ${falsePositiveDelay}"
 	if (falsePositive) {
 			pauseExecution(falsePositiveDelay * 1000)
 	}
 	
+	def inputPresence = evt.device.currentValue("presence") == "present"
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = false
 	
-	if (oldPresent && !newPresent) {
-		outputSensor.departed()
+	if (inputPresence && newPresent) {
+		if (oldPresent && !newPresent) {
+			outputSensor.departed()
 
-    	log "${outputSensor.displayName}.departed()"
-			
-        if (notifyAboutStateChanges) {
-            sendNotification("Departed: ${outputSensor.displayName}")
-        }
+			log "${outputSensor.displayName}.departed()"
+				
+			if (notifyAboutStateChanges) {
+				sendNotification("Departed: ${outputSensor.displayName}")
+			}
+		}
 	}
 }
 

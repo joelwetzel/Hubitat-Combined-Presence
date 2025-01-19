@@ -128,11 +128,6 @@ preferences {
 			input outputSensor
 		}
 		section() {
-			input "falsePositive", "bool", title: "Add a delay to allow for false positives (sensors activating and then returning to correct value within the set number of seconds)", submitOnChange: true
-			if (falsePositive)
-				input "falsePositiveDelay", "number", title: "Seconds to wait before confirming an event has occured", required: true, defaultValue: 0
-		}
-		section() {
 			paragraph ""	
 		}
 		section(hideable: true, hidden: true, "Notifications") {
@@ -258,10 +253,6 @@ def presenceChangedHandler(evt) {
 	log "PRESENCE CHANGED for: ${evt.device.name}"	
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
-	if (falsePositive) {
-			pauseExecution(falsePositiveDelay * 1000)
-	}
-	
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = false
 	
@@ -339,3 +330,5 @@ def log(msg) {
 		log.debug msg
 	}
 }
+
+

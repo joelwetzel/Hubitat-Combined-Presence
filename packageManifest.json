@@ -5,7 +5,7 @@
 	"version": "2.2.2",
 	"dateReleased": "2025-1-19",
 	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
-	"releaseNotes": "Added an optional delay to all combiner types to address the possibility of false positives",
+	"releaseNotes": "Added an optional delay to standard combiner type to address the possibility of false positives",
 	"communityLink": "https://community.hubitat.com/t/release-combined-presence",
 	"documentationLink": "https://github.com/joelwetzel/Hubitat-Combined-Presence",
 	"apps" : [
