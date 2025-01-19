@@ -1,5 +1,5 @@
 /**
- *  Combined Presence Instance v2.2.1
+ *  Combined Presence Instance v2.2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -85,6 +85,14 @@ preferences {
 			paragraph "This will send a notification any time the state of the Output Sensor is changed by Combined Presence."
 		}
 		section() {
+			input "falsePositive", "bool", title: "Add a delay to allow for false positives (sensors activating and then returning to correct value within the set number of seconds)", submitOnChange: true
+			if (falsePositive)
+				input "falsePositiveDelay", "number", title: "Seconds to wait before confirming an event has occured", required: true, defaultValue: 0
+		}
+		section() {
+			paragraph ""	
+		}
+		section() {
 			input enableLogging
 		}
 	}
@@ -128,6 +136,10 @@ def presenceChangedHandler(evt) {
 	log "PRESENCE CHANGED for: ${evt.device.name}"
 	
 	def present = false
+	
+	if (falsePositive) {
+			pauseExecution(falsePositiveDelay * 1000)
+	}
 	
 	inputSensors.each { inputSensor ->
 		if (inputSensor.currentValue("presence") == "present") {
