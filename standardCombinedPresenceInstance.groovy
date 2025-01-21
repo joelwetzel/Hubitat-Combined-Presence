@@ -240,7 +240,7 @@ def arrivedHandler(evt) {
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = true            // Something arrived!
 	
-	if (inputPresence && newPresent) {
+	if (inputPresence == newPresent) {
 		if (!oldPresent && newPresent) {
 			outputSensor.arrived()
 			
@@ -267,7 +267,7 @@ def departedHandler(evt) {
 	def oldPresent = outputSensor.currentValue("presence") == "present"
 	def newPresent = false
 	
-	if (inputPresence && newPresent) {
+	if (inputPresence == newPresent) {
 		if (oldPresent && !newPresent) {
 			outputSensor.departed()
 
