@@ -246,7 +246,16 @@ def departedHandler(evt) {
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
 	def oldPresent = outputSensor.currentValue("presence") == "present"
-	def newPresent = false
+	
+	// Check if ALL GPS sensors are now not present
+	def allGpsDeparted = true
+	inputSensorsGps.each { inputSensor ->
+		if (inputSensor.currentValue("presence") == "present") {
+			allGpsDeparted = false
+		}
+	}
+	
+	def newPresent = !allGpsDeparted
 	
 	if (oldPresent && !newPresent) {
 		outputSensor.departed()

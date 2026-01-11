@@ -55,4 +55,4 @@ However, if you must install manually:
 16. Click on "Add a new standard combiner"
 17. Choose your input presence sensors
 18. Choose your Virtual Presence sensor as the output
-15. Click "Done"
+19. Click "Done"

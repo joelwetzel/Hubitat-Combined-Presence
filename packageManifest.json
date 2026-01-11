@@ -4,7 +4,7 @@
 	"author": "Joel Wetzel",
 	"version": "2.2.1",
 	"dateReleased": "2021-8-4",
-	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Auto-Shades/master/LICENSE",
+	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/LICENSE",
 	"releaseNotes": "Fixed a naming typo.  You may need to re-save your existing combiners to get them working.",
 	"communityLink": "https://community.hubitat.com/t/release-combined-presence",
 	"documentationLink": "https://github.com/joelwetzel/Hubitat-Combined-Presence",
