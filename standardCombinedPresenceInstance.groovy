@@ -147,7 +147,7 @@ def initialize() {
         state.lastConsistentTime = new Date()
     }
 	
-	runEvery1Minute(checkForInconsistencies)
+	runEvery1Minute("checkForInconsistencies")
 }
 
 
