@@ -6,7 +6,7 @@ plugins {
 sourceSets {
     test {
         groovy {
-            srcDirs = ['tests', 'utils']
+            srcDirs = ['tests']
         }
     }
 }

@@ -4,8 +4,6 @@ import me.biocomp.hubitat_ci.device.helpers.PresenceSensorHelper
 import me.biocomp.hubitat_ci.util.integration.IntegrationAppSpecification
 import me.biocomp.hubitat_ci.validation.Flags
 
-import spock.lang.Specification
-
 /**
  * Basic tests for advancedCombinedPresenceInstance.groovy (Advanced Combiner)
  */
