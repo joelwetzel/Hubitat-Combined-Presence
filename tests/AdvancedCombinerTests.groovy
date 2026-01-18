@@ -1,6 +1,6 @@
 package joelwetzel.combined_presence.tests
 
-import me.biocomp.hubitat_ci.device.helpers.PresenceSensorHelper
+import me.biocomp.hubitat_ci.util.device_fixtures.PresenceSensorFixtureFactory
 import me.biocomp.hubitat_ci.util.integration.IntegrationAppSpecification
 import me.biocomp.hubitat_ci.validation.Flags
 
@@ -8,11 +8,11 @@ import me.biocomp.hubitat_ci.validation.Flags
  * Basic tests for advancedCombinedPresenceInstance.groovy (Advanced Combiner)
  */
 class AdvancedCombinerTests extends IntegrationAppSpecification {
-    def arrivingOrSensor1 = PresenceSensorHelper.getDeviceMock('arrivingOr1')
-    def arrivingAndSensor1 = PresenceSensorHelper.getDeviceMock('arrivingAnd1')
-    def arrivingAndSensor2 = PresenceSensorHelper.getDeviceMock('arrivingAnd2')
-    def departingOrSensor1 = PresenceSensorHelper.getDeviceMock('departingOr1')
-    def outputSensor = PresenceSensorHelper.getDeviceMock('output')
+    def arrivingOrSensor1 = PresenceSensorFixtureFactory.create('arrivingOr1')
+    def arrivingAndSensor1 = PresenceSensorFixtureFactory.create('arrivingAnd1')
+    def arrivingAndSensor2 = PresenceSensorFixtureFactory.create('arrivingAnd2')
+    def departingOrSensor1 = PresenceSensorFixtureFactory.create('departingOr1')
+    def outputSensor = PresenceSensorFixtureFactory.create('output')
 
     @Override
     def setup() {

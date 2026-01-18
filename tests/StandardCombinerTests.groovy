@@ -1,6 +1,6 @@
 package joelwetzel.combined_presence.tests
 
-import me.biocomp.hubitat_ci.device.helpers.PresenceSensorHelper
+import me.biocomp.hubitat_ci.util.device_fixtures.PresenceSensorFixtureFactory
 import me.biocomp.hubitat_ci.util.integration.IntegrationAppSpecification
 import me.biocomp.hubitat_ci.validation.Flags
 
@@ -8,10 +8,10 @@ import me.biocomp.hubitat_ci.validation.Flags
  * Basic tests for standardCombinedPresenceInstance.groovy (Standard Combiner)
  */
 class StandardCombinerTests extends IntegrationAppSpecification {
-    def gpsInputSensor1 = PresenceSensorHelper.getDeviceMock('gps1')
-    def gpsInputSensor2 = PresenceSensorHelper.getDeviceMock('gps2')
-    def wifiInputSensor = PresenceSensorHelper.getDeviceMock('wifi1')
-    def outputSensor = PresenceSensorHelper.getDeviceMock('output')
+    def gpsInputSensor1 = PresenceSensorFixtureFactory.create('gps1')
+    def gpsInputSensor2 = PresenceSensorFixtureFactory.create('gps2')
+    def wifiInputSensor = PresenceSensorFixtureFactory.create('wifi1')
+    def outputSensor = PresenceSensorFixtureFactory.create('output')
     def inputSensorsGps = [gpsInputSensor1, gpsInputSensor2]
     def inputSensorsWifi = [wifiInputSensor]
 

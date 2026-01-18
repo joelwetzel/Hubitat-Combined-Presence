@@ -1,6 +1,6 @@
 package joelwetzel.combined_presence.tests
 
-import me.biocomp.hubitat_ci.device.helpers.PresenceSensorHelper
+import me.biocomp.hubitat_ci.util.device_fixtures.PresenceSensorFixtureFactory
 import me.biocomp.hubitat_ci.util.integration.IntegrationAppSpecification
 import me.biocomp.hubitat_ci.validation.Flags
 
@@ -8,9 +8,9 @@ import me.biocomp.hubitat_ci.validation.Flags
  * Basic tests for combinedPresenceInstance.groovy (Boolean-OR Combiner)
  */
 class BooleanOrCombinerTests extends IntegrationAppSpecification {
-    def inputSensor1 = PresenceSensorHelper.getDeviceMock('sensor1')
-    def inputSensor2 = PresenceSensorHelper.getDeviceMock('sensor2')
-    def outputSensor = PresenceSensorHelper.getDeviceMock('output')
+    def inputSensor1 = PresenceSensorFixtureFactory.create('sensor1')
+    def inputSensor2 = PresenceSensorFixtureFactory.create('sensor2')
+    def outputSensor = PresenceSensorFixtureFactory.create('output')
     def inputSensors = [inputSensor1, inputSensor2]
 
     @Override
