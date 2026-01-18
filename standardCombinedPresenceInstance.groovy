@@ -246,6 +246,10 @@ def departedHandler(evt) {
 	//log.debug groovy.json.JsonOutput.toJson(evt)
 
 	def oldPresent = outputSensor.currentValue("presence") == "present"
+	// Set to false immediately when any GPS sensor departs.
+	// This is intentional: GPS sensors (geofencing) don't always respond at the same time,
+	// so we trigger departure on the first sensor rather than waiting for all sensors.
+	// This provides faster, more responsive departure detection.
 	def newPresent = false
 	
 	if (oldPresent && !newPresent) {
