@@ -1,4 +1,7 @@
 # Combined Presence app for Hubitat
+
+[![CI](https://github.com/joelwetzel/Hubitat-Combined-Presence/actions/workflows/ci.yml/badge.svg)](https://github.com/joelwetzel/Hubitat-Combined-Presence/actions/workflows/ci.yml)
+
 An app for Hubitat to combine two or more presence sensors to control an output Virtual Presence Sensor.
 
 There are 3 types of combiners:
