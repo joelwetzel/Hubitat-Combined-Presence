@@ -75,7 +75,7 @@ Public variables are configured in `.devcontainer/devcontainer.json`. For sensit
 
 1. Go to your repository → **Settings** → **Secrets and variables** → **Codespaces**
 2. Add the following secret:
-   - `MAVEN_GITHUB_TOKEN`: Your personal access token with `read:packages` scope ([generate here](https://github.com/settings/tokens))
+   - `MAVEN_GITHUB_TOKEN`: Your personal access token with `read:packages` scope ([generate here](https://github.com/settings/tokens/new?scopes=read:packages))
 
 `MAVEN_GITHUB_ACTOR` is automatically populated from your authenticated GitHub user when the Codespace starts.
 
