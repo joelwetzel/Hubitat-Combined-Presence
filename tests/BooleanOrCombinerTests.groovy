@@ -24,60 +24,52 @@ class BooleanOrCombinerTests extends IntegrationAppSpecification {
                 enableLogging: true
             ]
         )
-    }
-
-    void "installed() logs the settings"() {
-        when:
         appScript.installed()
-
-        then:
-        1 * log.info(_)
     }
 
-    void "initialize() subscribes to presence events"() {
-        when:
-        appScript.initialize()
-
-        then:
-        1 * appExecutor.subscribe(inputSensors, 'presence', 'presenceChangedHandler')
-    }
-
-    void "Boolean-OR: when all sensors are not present, output is not present"() {
+    void "Boolean-OR sets output to present when any sensor arrives"() {
         given:
-        appScript.initialize()
-        inputSensor1.presence = 'not present'
-        inputSensor2.presence = 'not present'
+        inputSensor1.initialize(appExecutor, [presence: "not present"])
+        inputSensor2.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "not present"])
 
         when:
-        appScript.presenceChangedHandler(makeEvent(inputSensor1, 'presence', 'not present'))
+        inputSensor1.arrived()
 
         then:
-        1 * outputSensor.departed()
+        inputSensor1.currentValue('presence') == "present"
+        inputSensor2.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "Boolean-OR: when at least one sensor is present, output is present"() {
+    void "Boolean-OR keeps output present while at least one sensor remains present"() {
         given:
-        appScript.initialize()
-        inputSensor1.presence = 'present'
-        inputSensor2.presence = 'not present'
+        inputSensor1.initialize(appExecutor, [presence: "present"])
+        inputSensor2.initialize(appExecutor, [presence: "present"])
+        outputSensor.initialize(appExecutor, [presence: "present"])
 
         when:
-        appScript.presenceChangedHandler(makeEvent(inputSensor1, 'presence', 'present'))
+        inputSensor1.departed()
 
         then:
-        1 * outputSensor.arrived()
+        inputSensor1.currentValue('presence') == "not present"
+        inputSensor2.currentValue('presence') == "present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "Boolean-OR: when both sensors are present, output is present"() {
+    void "Boolean-OR sets output to not present when the last sensor departs"() {
         given:
-        appScript.initialize()
-        inputSensor1.presence = 'present'
-        inputSensor2.presence = 'present'
+        inputSensor1.initialize(appExecutor, [presence: "present"])
+        inputSensor2.initialize(appExecutor, [presence: "present"])
+        outputSensor.initialize(appExecutor, [presence: "present"])
 
         when:
-        appScript.presenceChangedHandler(makeEvent(inputSensor1, 'presence', 'present'))
+        inputSensor1.departed()
+        inputSensor2.departed()
 
         then:
-        1 * outputSensor.arrived()
+        inputSensor1.currentValue('presence') == "not present"
+        inputSensor2.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "not present"
     }
 }

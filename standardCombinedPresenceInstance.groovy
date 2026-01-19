@@ -66,7 +66,7 @@ def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
 		title:				"Notify about state changes to the Output sensor",
-		default:			false	
+		defaultValue:			false	
 	]
 
 def notifyAboutInconsistencies = [
@@ -74,7 +74,7 @@ def notifyAboutInconsistencies = [
 		type:				"bool",
 		title:				"Notify about inconsistent Inputs for more than 30 minutes",
 		description:		"Send notifications if input sensors have inconsistent values for an extended period.",
-		default:			false	
+		defaultValue:			false	
 	]
 
 def enableLogging = [
@@ -86,8 +86,9 @@ def enableLogging = [
 	]
 
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
+	page(name: "mainPage", title: "Standard Combiner", install: true, uninstall: true) {
 		section(getFormat("title", "Standard Combiner")) {
+			paragraph ""
 		}
 		section(hideable: true, hidden: false, "Input Sensors") {
             input inputSensorsGps

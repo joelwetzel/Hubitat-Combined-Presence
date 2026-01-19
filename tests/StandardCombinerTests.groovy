@@ -27,66 +27,67 @@ class StandardCombinerTests extends IntegrationAppSpecification {
                 enableLogging: true
             ]
         )
-    }
-
-    void "installed() logs the settings"() {
-        when:
         appScript.installed()
-
-        then:
-        1 * log.info(_)
     }
 
-    void "initialize() subscribes to GPS sensors for both arrival and departure"() {
-        when:
-        appScript.initialize()
-
-        then:
-        1 * appExecutor.subscribe(inputSensorsGps, 'presence.present', 'arrivedHandler')
-        1 * appExecutor.subscribe(inputSensorsGps, 'presence.not present', 'departedHandler')
-    }
-
-    void "initialize() subscribes to WiFi sensors only for arrival"() {
-        when:
-        appScript.initialize()
-
-        then:
-        1 * appExecutor.subscribe(inputSensorsWifi, 'presence.present', 'arrivedHandler')
-    }
-
-    void "arrivedHandler() sets output sensor to present"() {
+    void "GPS arrival sets the output to present"() {
         given:
-        appScript.initialize()
-        outputSensor.presence = 'not present'
+        gpsInputSensor1.initialize(appExecutor, [presence: "not present"])
+        gpsInputSensor2.initialize(appExecutor, [presence: "not present"])
+        wifiInputSensor.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "not present"])
 
         when:
-        appScript.arrivedHandler(makeEvent(gpsInputSensor1, 'presence', 'present'))
+        gpsInputSensor1.arrived()
 
         then:
-        1 * outputSensor.arrived()
+        gpsInputSensor1.currentValue('presence') == "present"
+        gpsInputSensor2.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "departedHandler() sets output sensor to not present"() {
+    void "WiFi arrival sets the output to present"() {
         given:
-        appScript.initialize()
-        outputSensor.presence = 'present'
+        gpsInputSensor1.initialize(appExecutor, [presence: "not present"])
+        gpsInputSensor2.initialize(appExecutor, [presence: "not present"])
+        wifiInputSensor.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "not present"])
 
         when:
-        appScript.departedHandler(makeEvent(gpsInputSensor1, 'presence', 'not present'))
+        wifiInputSensor.arrived()
 
         then:
-        1 * outputSensor.departed()
+        wifiInputSensor.currentValue('presence') == "present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "WiFi sensor arrival triggers arrivedHandler"() {
+    void "GPS departure sets the output to not present"() {
         given:
-        appScript.initialize()
-        outputSensor.presence = 'not present'
+        gpsInputSensor1.initialize(appExecutor, [presence: "present"])
+        gpsInputSensor2.initialize(appExecutor, [presence: "present"])
+        wifiInputSensor.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "present"])
 
         when:
-        appScript.arrivedHandler(makeEvent(wifiInputSensor, 'presence', 'present'))
+        gpsInputSensor1.departed()
 
         then:
-        1 * outputSensor.arrived()
+        gpsInputSensor1.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "not present"
+    }
+
+    void "WiFi departure does not set the output to not present"() {
+        given:
+        gpsInputSensor1.initialize(appExecutor, [presence: "present"])
+        gpsInputSensor2.initialize(appExecutor, [presence: "present"])
+        wifiInputSensor.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "present"])
+
+        when:
+        wifiInputSensor.departed()
+
+        then:
+        wifiInputSensor.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "present"
     }
 }

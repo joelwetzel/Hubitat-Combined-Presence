@@ -85,7 +85,7 @@ def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
 		title:				"Notify about state changes to the Output sensor",
-		default:			false	
+		defaultValue:		false	
 	]
 
 def notifyAboutInconsistencies = [
@@ -93,7 +93,7 @@ def notifyAboutInconsistencies = [
 		type:				"bool",
 		title:				"Notify about inconsistent Inputs for more than 30 minutes",
 		description:		"Send notifications if input sensors have inconsistent values for an extended period.",
-		default:			false	
+		defaultValue:		false	
 	]
 
 def enableLogging = [
@@ -105,8 +105,9 @@ def enableLogging = [
 	]
 
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
+	page(name: "mainPage", title: "Advanced Combiner", install: true, uninstall: true) {
 		section(getFormat("title", "Advanced Combiner")) {
+			paragraph ""
 		}
 		section(hideable: true, "If the output is Not Present, then make it arrive if:") {
 			input inputSensorsArrivingOr

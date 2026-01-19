@@ -28,64 +28,58 @@ class AdvancedCombinerTests extends IntegrationAppSpecification {
                 enableLogging: true
             ]
         )
-    }
-
-    void "installed() logs the settings"() {
-        when:
         appScript.installed()
-
-        then:
-        1 * log.info(_)
     }
+    
 
-    void "initialize() subscribes to all sensor groups"() {
-        when:
-        appScript.initialize()
-
-        then:
-        1 * appExecutor.subscribe([arrivingOrSensor1], 'presence', 'presenceChangedHandler')
-        1 * appExecutor.subscribe([arrivingAndSensor1, arrivingAndSensor2], 'presence', 'presenceChangedHandler')
-        1 * appExecutor.subscribe([departingOrSensor1], 'presence', 'presenceChangedHandler')
-        1 * appExecutor.subscribe([], 'presence', 'presenceChangedHandler')
-    }
-
-    void "when any ArrivingOr sensor is present, output becomes present"() {
+    void "ArrivingOr arrival sets the output to present"() {
         given:
+        arrivingOrSensor1.initialize(appExecutor, [presence: "not present"])
+        arrivingAndSensor1.initialize(appExecutor, [presence: "not present"])
+        arrivingAndSensor2.initialize(appExecutor, [presence: "not present"])
+        departingOrSensor1.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "not present"])
         appScript.initialize()
-        outputSensor.presence = 'not present'
-        arrivingOrSensor1.presence = 'present'
 
         when:
-        appScript.presenceChangedHandler(makeEvent(arrivingOrSensor1, 'presence', 'present'))
+        arrivingOrSensor1.arrived()
 
         then:
-        1 * outputSensor.arrived()
+        arrivingOrSensor1.currentValue('presence') == "present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "when all ArrivingAnd sensors are present, output becomes present"() {
+    void "ArrivingAnd sensors arriving together set the output to present"() {
         given:
-        appScript.initialize()
-        outputSensor.presence = 'not present'
-        arrivingAndSensor1.presence = 'present'
-        arrivingAndSensor2.presence = 'present'
+        arrivingOrSensor1.initialize(appExecutor, [presence: "not present"])
+        arrivingAndSensor1.initialize(appExecutor, [presence: "not present"])
+        arrivingAndSensor2.initialize(appExecutor, [presence: "not present"])
+        departingOrSensor1.initialize(appExecutor, [presence: "not present"])
+        outputSensor.initialize(appExecutor, [presence: "not present"])
 
         when:
-        appScript.presenceChangedHandler(makeEvent(arrivingAndSensor1, 'presence', 'present'))
+        arrivingAndSensor1.arrived()
+        arrivingAndSensor2.arrived()
 
         then:
-        1 * outputSensor.arrived()
+        arrivingAndSensor1.currentValue('presence') == "present"
+        arrivingAndSensor2.currentValue('presence') == "present"
+        outputSensor.currentValue('presence') == "present"
     }
 
-    void "when any DepartingOr sensor departs, output becomes not present"() {
+    void "DepartingOr departure sets the output to not present"() {
         given:
-        appScript.initialize()
-        outputSensor.presence = 'present'
-        departingOrSensor1.presence = 'not present'
+        arrivingOrSensor1.initialize(appExecutor, [presence: "present"])
+        arrivingAndSensor1.initialize(appExecutor, [presence: "present"])
+        arrivingAndSensor2.initialize(appExecutor, [presence: "present"])
+        departingOrSensor1.initialize(appExecutor, [presence: "present"])
+        outputSensor.initialize(appExecutor, [presence: "present"])
 
         when:
-        appScript.presenceChangedHandler(makeEvent(departingOrSensor1, 'presence', 'not present'))
+        departingOrSensor1.departed()
 
         then:
-        1 * outputSensor.departed()
+        departingOrSensor1.currentValue('presence') == "not present"
+        outputSensor.currentValue('presence') == "not present"
     }
 }
