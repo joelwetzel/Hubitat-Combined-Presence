@@ -5,7 +5,7 @@
 	"version": "2.2.2",
 	"dateReleased": "2026-01-19",
 	"licenseFile": "https://raw.githubusercontent.com/joelwetzel/Hubitat-Combined-Presence/master/LICENSE",
-	"releaseNotes": "Added integration tests.",
+	"releaseNotes": "Added CI/CD pipeline, integration tests, build configuration updates, and CodeSpaces development environment support.",
 	"communityLink": "https://community.hubitat.com/t/release-combined-presence",
 	"documentationLink": "https://github.com/joelwetzel/Hubitat-Combined-Presence",
 	"apps" : [
