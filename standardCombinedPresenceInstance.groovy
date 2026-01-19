@@ -1,5 +1,5 @@
 /**
- *  Combined Presence - Standard Combiner v2.2.1
+ *  Combined Presence - Standard Combiner v2.2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
