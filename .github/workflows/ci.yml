@@ -31,9 +31,9 @@ jobs:
     
     - name: Build and Test
       env:
-        GITHUB_REPOSITORY: joelwetzel/hubitat_ci
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MAVEN_GITHUB_REPOSITORY: joelwetzel/hubitat_ci
+        MAVEN_GITHUB_ACTOR: ${{ github.actor }}
+        MAVEN_GITHUB_TOKEN: ${{ secrets.MAVEN_GITHUB_TOKEN }}
         MAVEN_ARTIFACT_ID: hubitat_ci
       run: ./gradlew test --no-daemon --stacktrace
     
