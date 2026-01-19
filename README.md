@@ -1,4 +1,7 @@
 # Combined Presence app for Hubitat
+
+[![CI](https://github.com/joelwetzel/Hubitat-Combined-Presence/actions/workflows/ci.yml/badge.svg)](https://github.com/joelwetzel/Hubitat-Combined-Presence/actions/workflows/ci.yml)
+
 An app for Hubitat to combine two or more presence sensors to control an output Virtual Presence Sensor.
 
 There are 3 types of combiners:
@@ -56,3 +59,55 @@ However, if you must install manually:
 17. Choose your input presence sensors
 18. Choose your Virtual Presence sensor as the output
 19. Click "Done"
+
+## Developer Instructions
+
+This project includes a comprehensive integration test suite to ensure code quality and reliability when making changes.
+
+### Testing Framework
+
+The tests use a fork of biocomp's [Hubitat_CI](https://github.com/biocomp/hubitat_ci) project. The forked version is maintained at [https://github.com/joelwetzel/hubitat_ci](https://github.com/joelwetzel/hubitat_ci).
+
+### Environment Variables
+
+The Gradle build system pulls the hubitat_ci testing framework from Maven during the build process. The required environment variables are automatically configured when using GitHub Codespaces.
+
+#### For GitHub Codespaces
+
+Public variables are configured in `.devcontainer/devcontainer.json`. For sensitive credentials, add them as Codespaces Secrets:
+
+1. Go to your repository → **Settings** → **Secrets and variables** → **Codespaces**
+2. Add the following secret:
+   - `MAVEN_GITHUB_TOKEN`: Your personal access token with `read:packages` scope ([generate here](https://github.com/settings/tokens/new?scopes=read:packages))
+
+`MAVEN_GITHUB_ACTOR` is automatically populated from your authenticated GitHub user when the Codespace starts.
+
+#### For Local Development
+
+If developing locally, export these variables in your shell:
+
+```bash
+export MAVEN_GITHUB_REPOSITORY=joelwetzel/hubitat_ci
+export MAVEN_GITHUB_ACTOR=your_github_username
+export MAVEN_GITHUB_TOKEN=your_personal_access_token
+export MAVEN_ARTIFACT_ID=hubitat_ci
+```
+
+**Note**: The `MAVEN_GITHUB_TOKEN` requires `read:packages` scope to access the Maven package repository.
+
+### Running Tests
+
+To run the integration tests:
+
+```bash
+./gradlew test
+```
+
+To clean the build artifacts:
+
+```bash
+./gradlew clean
+```
+
+The test reports can be found in the `build/reports/tests/test/` directory after running the tests.
+

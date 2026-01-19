@@ -1,0 +1,12 @@
+{
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "11"
+    }
+  },
+  "remoteEnv": {
+    "MAVEN_GITHUB_REPOSITORY": "joelwetzel/hubitat_ci",
+    "MAVEN_ARTIFACT_ID": "hubitat_ci"
+  },
+  "postCreateCommand": "echo 'export MAVEN_GITHUB_ACTOR=$(gh api user -q .login)' >> ~/.bashrc && source ~/.bashrc"
+}

@@ -1,5 +1,5 @@
 /**
- *  Combined Presence v2.2.1
+ *  Combined Presence v2.2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -27,7 +27,7 @@ definition(
 
 
 preferences {
-     page name: "mainPage", title: "", install: true, uninstall: true
+     page name: "mainPage", title: "Combined Presence", install: true, uninstall: true
 }
 
 

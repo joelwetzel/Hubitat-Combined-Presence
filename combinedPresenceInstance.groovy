@@ -1,5 +1,5 @@
 /**
- *  Combined Presence Instance v2.2.1
+ *  Combined Presence Instance v2.2.2
  *
  *  Copyright 2020 Joel Wetzel
  *
@@ -60,7 +60,7 @@ def notifyAboutStateChanges = [
 		name:				"notifyAboutStateChanges",
 		type:				"bool",
 		title:				"Notify about state changes to the Output sensor",
-		default:			false	
+		defaultValue:		false	
 	]
 
 def enableLogging = [
@@ -72,8 +72,9 @@ def enableLogging = [
 	]
 
 preferences {
-	page(name: "mainPage", title: "", install: true, uninstall: true) {
+	page(name: "mainPage", title: "Boolean-OR Combiner", install: true, uninstall: true) {
 		section(getFormat("title", "Boolean-OR Combiner")) {
+			paragraph ""
 		}
 		section() {
 			input inputSensors
