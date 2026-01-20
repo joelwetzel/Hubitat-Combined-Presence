@@ -37,6 +37,27 @@ jobs:
         MAVEN_ARTIFACT_ID: hubitat_ci
       run: ./gradlew test --no-daemon --stacktrace
     
+    - name: Display Test Failure Details
+      if: failure()
+      run: |
+        echo "========================================="
+        echo "Test Failure Summary"
+        echo "========================================="
+        if [ -f build/reports/tests/test/index.html ]; then
+          echo "Full test report available in artifacts"
+          echo ""
+          echo "Checking for failed tests..."
+          find build/test-results/test -name "*.xml" -type f | while read file; do
+            if grep -q 'failures="[1-9]' "$file" || grep -q 'errors="[1-9]' "$file"; then
+              echo "----------------------------------------"
+              echo "Failed test file: $file"
+              grep -A 10 '<failure\|<error' "$file" || true
+            fi
+          done
+        else
+          echo "No test reports found"
+        fi
+    
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v4
       if: always()
@@ -45,6 +66,8 @@ jobs:
         check_name: Test Results
         detailed_summary: true
         include_passed: true
+        fail_on_failure: true
+        annotate_only: false
     
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
@@ -52,4 +75,12 @@ jobs:
       with:
         name: test-results
         path: build/reports/tests/test/
+        retention-days: 30
+    
+    - name: Upload Test XML Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-xml-results
+        path: build/test-results/test/*.xml
         retention-days: 30
